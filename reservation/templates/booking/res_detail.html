@@ -4,11 +4,11 @@
 <div class = 'border rounded p-3 my-5'>
 
     
-<h1 class="my-5">{reservation.name}</h1>
+<h1 class="my-5">{{res.name}}</h1>
 
-    <p>{{reservations.name}}</p>
+    <p>{{res.name}}</p>
     <a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">back</a>
-    <a href="{% url 'reservation' pk=reservations.id %}" class="btn btn-secondary">edit</a>
-    <a href="{% url 'reservation' pk=reservations.id %}" class="btn btn-danger">delete</a>
+    <a href="{% url 'reservation.update' pk=res.id %}" class="btn btn-secondary">edit</a>
+    <a href="{% url 'reservation.delete' pk=res.id %}" class="btn btn-danger">delete</a>
 {% endblock %}
     

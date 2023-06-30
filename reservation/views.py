@@ -23,6 +23,7 @@ class ResUpdateView(LoginRequiredMixin, UpdateView):
     model = Reservation 
     success_url = '/mini/reservation'
     form_class = ReservationForm
+    template_name = 'booking/res_form.html'
     login_url = "/login"
 
 class ResCreateView(LoginRequiredMixin, CreateView):
@@ -58,8 +59,9 @@ class ResListView(LoginRequiredMixin, ListView):
 
 class ResDetailView(DetailView):
     model = Reservation
-    context_object_name = 'reservation_list'
-    login_url = "/login"
+    template_name = 'booking/res_detail.html'
+    context_object_name = 'res'
+    
 
 
 

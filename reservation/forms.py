@@ -14,13 +14,14 @@ class ReservationForm(forms.ModelForm):
 
   
     start_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
-    #end_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
+    end_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
     class Meta:
         model = Reservation
-        fields = ['start_date','name',  't_sum', 'user']
+        fields = ['start_date','end_date','name', 'lname',  't_sum', 'user']
         widgets = {
 
             'name': forms.TextInput(attrs={'class': 'form-control mb-5'}),
+            'lname': forms.TextInput(attrs={'class': 'form-control mb-5'}),
             't_sum': forms.NumberInput(attrs={'class': 'form-control mb-5'}),
         #     'apartment': forms.Select(attrs={'class': 'form-control mb-5'}),
         #     'platform': forms.Select(attrs={'class': 'form-control mb-5'}),

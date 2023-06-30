@@ -4,7 +4,7 @@
 {% block content %}
 
 <form    method='POST'>{% csrf_token %}
-    <p>are you sure you want to delete {reservations.fname}?</p>
+    <p>are you sure you want to delete {{reservation.name}}'s reservation?</p>
     <p>This action cant be undone</p>
     <input type="submit" class = "btn btn-danger" value="confirm">
 

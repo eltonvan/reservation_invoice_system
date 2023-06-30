@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="my-5">platform list:</h1>
+
+        <div class="row row-cols3 g-2"> 
+            {% for plt in platform %}
+            <div class="col"> 
+                <div class="p-3 border">
+                    <a href="{% url 'platform.detail' pk=plt.id %}" class="text-dark text-decoration-non">
+                        <h3>{{plt.name}}</h3>
+                    </a>
+                    {{plt.name |truncatechars:10}}
+
+                </div>
+            </div>
+            {% endfor %}
+            <a href="{%url 'platform.new' %}" class="btn btn-primary">add platform</a>
+        </div> 
+{% endblock %}

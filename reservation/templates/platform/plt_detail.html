@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class = 'border rounded p-3 my-5'>
+
+    
+<h1 class="my-5">{{plt.name}}</h1>
+
+    <p>{{plt.name}}</p>
+    <a href="{% url 'platform.list' %}" class="btn btn-secondary my-5">back</a>
+    <a href="{% url 'platform.update' pk=plt.id %}" class="btn btn-secondary">edit</a>
+    <a href="{% url 'platform.delete' pk=plt.id %}" class="btn btn-danger">delete</a>
+{% endblock %}
+    

@@ -18,6 +18,8 @@
             <a href="{% url 'logout' %}" class="btn btn-outline-light me-1">logout</a>
             <a href="{% url 'reservation.list' %}" class="btn btn-outline-light me-1">home</a>
             <a href="{% url 'reservation.new' %}" class="btn btn-outline-light me-1">new reservation</a>
+            <a href="{% url 'platform.list' %}" class="btn btn-outline-light me-1">platform</a>
+
             {% else %}
 
             <a href="{% url 'login' %}" class="btn btn-outline-light me-1">login</a>

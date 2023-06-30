@@ -13,6 +13,11 @@ urlpatterns = [
     path('platform/<int:pk>/edit', views.PltUpdateView.as_view(), name = 'platform.update'),
     path('platform/<int:pk>/delete', views.PltDeleteView.as_view(), name = 'platform.delete'),
     path('platform/new', views.PltCreateView.as_view(), name = 'platform.new'),
-    
+    path('apartment', views.AptListView.as_view(), name = 'apartment.list'),
+    path('apartment/<int:pk>', views.AptDetailView.as_view(), name = 'apartment.detail'),
+    path('apartment/<int:pk>/edit', views.AptUpdateView.as_view(), name = 'apartment.update'),
+    path('apartment/<int:pk>/delete', views.AptDeleteView.as_view(), name = 'apartment.delete'),
+    path('apartment/new', views.AptCreateView.as_view(), name = 'apartment.new'),
+
 
 ] 

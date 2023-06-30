@@ -15,6 +15,15 @@ class Platform(models.Model):
         return self.name
 
 
+class Apartment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='apartment', null=True, blank=True)
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    date_contract = models.DateField()
+
+    def __str__(self):
+        return self.name
 
 
 
@@ -39,4 +48,7 @@ class Reservation(models.Model):
     purpose = models.CharField(max_length=255,choices=PURPOSE_CHOICES, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservation')
     platform = models.ForeignKey(Platform, on_delete=models.CASCADE, related_name='reservation', blank=True, null=True)
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='reservation', blank=True, null=True)
 
+    def __str__(self):
+        return self.name    

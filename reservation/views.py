@@ -8,8 +8,8 @@ from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import ReservationForm, PlatformForm
-from .models import Reservation, Platform
+from .forms import ReservationForm, PlatformForm, ApartmentForm
+from .models import Reservation, Platform, Apartment
 
 # view of reservation pages
 class ResDeleteView(LoginRequiredMixin, DeleteView):
@@ -102,4 +102,49 @@ class PltDeleteView(LoginRequiredMixin, DeleteView):
     success_url = '/mini/platform'
     template_name = 'platform/plt_delete.html'
     login_url = "/login"
+
+# apartment pages
+
+class AptListView(LoginRequiredMixin, ListView):
+    model = Apartment
+    template_name = 'apartment/apt_list.html'
+    context_object_name = 'apartment'
+    login_url = "/login"
     
+    def get_queryset(self):
+        
+        return self.request.user.apartment.all()
+    
+class AptDetailView(LoginRequiredMixin, DetailView):
+    model = Apartment
+    template_name = 'apartment/apt_detail.html'
+    context_object_name = 'apt'
+    login_url = "/login"    
+
+
+
+class AptCreateView(LoginRequiredMixin, CreateView):
+    model = Apartment
+    template_name = 'apartment/apt_form.html'
+    success_url = '/mini/apartment'
+    form_class = ApartmentForm
+    login_url = "/login"
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+    
+class AptUpdateView(LoginRequiredMixin, UpdateView):
+    model = Apartment
+    template_name = 'apartment/apt_form.html'
+    success_url = '/mini/apartment'
+    form_class = ApartmentForm
+    login_url = "/login"
+
+class AptDeleteView(LoginRequiredMixin, DeleteView):
+    model = Apartment
+    success_url = '/mini/apartment'
+    template_name = 'apartment/apt_delete.html'
+    login_url = "/login"

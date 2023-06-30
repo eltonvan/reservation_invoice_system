@@ -2,7 +2,11 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from home import models
-from .models import Reservation, User,Platform
+from .models import Reservation, User,Platform, Apartment
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 class PlatformForm(forms.ModelForm):
     class Meta:
@@ -17,9 +21,20 @@ class PlatformForm(forms.ModelForm):
             'url': forms.TextInput(attrs={'class': 'form-control mb-5'}),
         }
 
+class ApartmentForm(forms.ModelForm):
 
-class DateInput(forms.DateInput):
-    input_type = 'date'
+    class Meta:
+        model = Apartment
+        fields = ['name','address','date_contract']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control mb-5'}),
+            'address': forms.TextInput(attrs={'class': 'form-control mb-5'}),
+           # 'date_contract': forms.DateInput(attrs={'class': 'form-control mb-5'}),
+        }
+
+    date_contract = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
+
+
  
 class ReservationForm(forms.ModelForm):
 
@@ -34,7 +49,7 @@ class ReservationForm(forms.ModelForm):
             self.fields['user'].initial = user
     class Meta:
         model = Reservation
-        fields = ['start_date','end_date','name', 'lname',  't_sum','commission', 'rech_num' ,'purpose','user']
+        fields = ['start_date','end_date','name', 'lname',  't_sum','commission', 'rech_num' ,'purpose','user', 'apartment', 'platform', 'company', 'email']
         widgets = {
 
             'name': forms.TextInput(attrs={'class': 'form-control mb-5'}),
@@ -47,8 +62,8 @@ class ReservationForm(forms.ModelForm):
             'rech_num': forms.TextInput(attrs={'class': 'form-control mb-5'}),
             'link': forms.URLInput(attrs={'class': 'form-control mb-5'}),
             'user': forms.Select(attrs={'class': 'form-control mb-5'}),
-        #     'apartment': forms.Select(attrs={'class': 'form-control mb-5'}),
-        #     'platform': forms.Select(attrs={'class': 'form-control mb-5'}),
+            'apartment': forms.Select(attrs={'class': 'form-control mb-5'}),
+            'platform': forms.Select(attrs={'class': 'form-control mb-5'}),
         }
         #labels = {'start_date': 'Check-in', 'end_date': 'Checkout', 'num_guests': 'Number of Guests', 'fname': 'First Name', 'lname': 'Last Name', 'email': 'Email', 'purpose': 'Purpose', 'company': 'Company', 't_sum': 'Total Sum', 'commission': 'Commission', 'rech_num': 'Rechnung Number', 'link_reservation': 'Link Reservation', 'guest_document': 'Guest Document', 'apartment': 'Apartment', 'platform': 'Platform'}
 

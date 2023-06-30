@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+   <h1>Welcome mini reservation</h1>
+    <p>today is {{today}}</p>
+    <a href="{%url 'reservation.list' %}" class="btn btn-primary">reservation list</a>
+    
+{% endblock %}
+
+

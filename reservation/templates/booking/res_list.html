@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="my-5">reservation list:</h1>
+
+        <div class="row row-cols3 g-2"> 
+            {% for res in reservation %}
+            <div class="col"> 
+                <div class="p-3 border">
+                    <a href="{% url 'reservation.detail' pk=res.id %}" class="text-dark text-decoration-non">
+                        <h3>{{res.name}}</h3>
+                    </a>
+                    {{res.start_date |truncatechars:10}}
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div> 
+{% endblock %}

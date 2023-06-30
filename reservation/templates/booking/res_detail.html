@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class = 'border rounded p-3 my-5'>
+
+    
+<h1 class="my-5">{reservation.name}</h1>
+
+    <p>{{reservations.name}}</p>
+    <a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">back</a>
+    <a href="{% url 'reservation' pk=reservations.id %}" class="btn btn-secondary">edit</a>
+    <a href="{% url 'reservation' pk=reservations.id %}" class="btn btn-danger">delete</a>
+{% endblock %}
+    

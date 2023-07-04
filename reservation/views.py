@@ -1,35 +1,37 @@
 from typing import Any, List
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
-#from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from datetime import datetime
-#from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReservationForm, PlatformForm, ApartmentForm
-from .models import Reservation, Platform, Apartment
+from .models import Reservation, Platform, Apartment ,Invoice
 
+RESERVATION_URL = '/mini/reservation'
+LOGIN_URL = "/login"
+PLATFORM_URL = '/mini/platform'
+APARTMENT_URL = '/mini/apartment'
 # view of reservation pages
 class ResDeleteView(LoginRequiredMixin, DeleteView):
     model = Reservation 
-    success_url = '/mini/reservation'
+    success_url = RESERVATION_URL
     template_name = 'booking/res_delete.html'
-    login_url = "/login"
+    login_url = LOGIN_URL
     
 
 class ResUpdateView(LoginRequiredMixin, UpdateView):
     model = Reservation 
-    success_url = '/mini/reservation'
+    success_url = RESERVATION_URL
     form_class = ReservationForm
     template_name = 'booking/res_form.html'
-    login_url = "/login"
+    login_url = LOGIN_URL
 
 class ResCreateView(LoginRequiredMixin, CreateView):
     model = Reservation
     template_name = 'booking/res_form.html'
-    success_url = '/mini/reservation'
+    success_url = RESERVATION_URL
     form_class = ReservationForm
 
     def form_valid(self, form):
@@ -45,7 +47,7 @@ class ResListView(LoginRequiredMixin, ListView):
     model = Reservation
     template_name = 'booking/res_list.html'
     context_object_name = 'reservation'
-    login_url = "/login"
+    login_url = LOGIN_URL
   
     def get_queryset(self):
         
@@ -64,7 +66,7 @@ class PltListView(LoginRequiredMixin, ListView):
     model = Platform
     template_name = 'platform/plt_list.html'
     context_object_name = 'platform'
-    login_url = "/login"
+    login_url = LOGIN_URL
     
     def get_queryset(self):
         
@@ -80,9 +82,9 @@ class PltDetailView(LoginRequiredMixin, DetailView):
 class PltCreateView(LoginRequiredMixin, CreateView):
     model = Platform
     template_name = 'platform/plt_form.html'
-    success_url = '/mini/platform'
+    success_url = PLATFORM_URL
     form_class = PlatformForm
-    login_url = "/login"
+    login_url =LOGIN_URL
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -93,23 +95,22 @@ class PltCreateView(LoginRequiredMixin, CreateView):
 class PltUpdateView(LoginRequiredMixin, UpdateView):
     model = Platform
     template_name = 'platform/plt_form.html'
-    success_url = '/mini/platform'
+    success_url = PLATFORM_URL
     form_class = PlatformForm
-    login_url = "/login"
+    login_url =LOGIN_URL
 
 class PltDeleteView(LoginRequiredMixin, DeleteView):
     model = Platform
-    success_url = '/mini/platform'
+    success_url = PLATFORM_URL
     template_name = 'platform/plt_delete.html'
-    login_url = "/login"
+    login_url = LOGIN_URL
 
 # apartment pages
 
 class AptListView(LoginRequiredMixin, ListView):
     model = Apartment
     template_name = 'apartment/apt_list.html'
-    context_object_name = 'apartment'
-    login_url = "/login"
+    context_object_name = 'apartment' # name used in template
     
     def get_queryset(self):
         
@@ -118,17 +119,17 @@ class AptListView(LoginRequiredMixin, ListView):
 class AptDetailView(LoginRequiredMixin, DetailView):
     model = Apartment
     template_name = 'apartment/apt_detail.html'
-    context_object_name = 'apt'
-    login_url = "/login"    
+    context_object_name = 'apt' # name used in template
+    login_url = LOGIN_URL    
 
 
 
 class AptCreateView(LoginRequiredMixin, CreateView):
     model = Apartment
     template_name = 'apartment/apt_form.html'
-    success_url = '/mini/apartment'
+    success_url = APARTMENT_URL
     form_class = ApartmentForm
-    login_url = "/login"
+    login_url = LOGIN_URL
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -139,12 +140,46 @@ class AptCreateView(LoginRequiredMixin, CreateView):
 class AptUpdateView(LoginRequiredMixin, UpdateView):
     model = Apartment
     template_name = 'apartment/apt_form.html'
-    success_url = '/mini/apartment'
+    success_url = APARTMENT_URL
     form_class = ApartmentForm
-    login_url = "/login"
+    login_url = LOGIN_URL
 
 class AptDeleteView(LoginRequiredMixin, DeleteView):
     model = Apartment
-    success_url = '/mini/apartment'
+    success_url = APARTMENT_URL
     template_name = 'apartment/apt_delete.html'
-    login_url = "/login"
+    login_url = LOGIN_URL
+
+# invoice pages
+
+class InvoiceListView(LoginRequiredMixin, ListView):
+    model = Reservation
+    template_name = 'invoice/inv_list.html'
+    context_object_name = 'invoices' # name used in template
+    login_url = LOGIN_URL
+    
+    def get_queryset(self):
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        queryset = super().get_queryset()
+
+        if start_date and end_date:
+            queryset = QuerySet.filter(date__range=[start_date, end_date])
+        
+        return queryset
+    
+class InvoiceDetailView(LoginRequiredMixin, DetailView):
+    model = Reservation
+    template_name = 'invoice/inv_detail.html'
+    context_object_name = 'inv' # name used in template
+    login_url = LOGIN_URL
+
+    def get_object(self):
+        reservation_id = self.kwargs.get('id')
+        reservation = Reservation.objects.get(id=reservation_id)
+
+        invoice = Invoice()
+        invoice.calculate_fields(reservation)
+
+        return invoice
+

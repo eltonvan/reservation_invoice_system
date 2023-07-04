@@ -18,6 +18,10 @@ urlpatterns = [
     path('apartment/<int:pk>/edit', views.AptUpdateView.as_view(), name = 'apartment.update'),
     path('apartment/<int:pk>/delete', views.AptDeleteView.as_view(), name = 'apartment.delete'),
     path('apartment/new', views.AptCreateView.as_view(), name = 'apartment.new'),
+    path('invoice/<id>/', views.InvoiceDetailView.as_view(), name='inv_detail'),
+    path('invoice', views.InvoiceListView.as_view(), name='inv_list'),
+    
+
 
 
 ] 

@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="my-5">invoice list:</h1>
+
+        <div class="row row-cols3 g-2"> 
+            {% for inv in invoice %}
+            <div class="col"> 
+                <div class="p-3 border">
+                    <a href="{% url 'invoice.detail' pk=inv.id %}" class="text-dark text-decoration-non">
+                        <h3>{{inv.name}}</h3>
+                    </a>
+                    {{inv.start_date |truncatechars:10}}
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div> 
+{% endblock %}

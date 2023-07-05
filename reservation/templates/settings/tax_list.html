@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="my-5">tax rates list:</h1>
+
+        <div class="row row-cols3 g-2"> 
+            {% for tax in taxrates %}
+            <div class="col"> 
+                <div class="p-3 border">
+                    <a href="{% url 'taxrate.detail' pk=tax.id %}" class="text-dark text-decoration-non">
+                        <h3>{{tax.citytax_rate}}</h3>
+                    </a>
+                    {{inv.vat_rate }}</br>
+                 
+
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div> 
+{% endblock %}

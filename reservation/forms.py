@@ -1,12 +1,12 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
 from home import models
-from .models import Reservation, User,Platform, Apartment
+from .models import Reservation, User,Platform, Apartment, TaxRate
 
 
 class DateInput(forms.DateInput):
     input_type = 'date'
+
 
 class PlatformForm(forms.ModelForm):
     class Meta:
@@ -21,6 +21,7 @@ class PlatformForm(forms.ModelForm):
             'url': forms.TextInput(attrs={'class': 'form-control mb-5'}),
         }
 
+
 class ApartmentForm(forms.ModelForm):
 
     class Meta:
@@ -29,16 +30,30 @@ class ApartmentForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control mb-5'}),
             'address': forms.TextInput(attrs={'class': 'form-control mb-5'}),
-           # 'date_contract': forms.DateInput(attrs={'class': 'form-control mb-5'}),
         }
-
     date_contract = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
 
 
- 
+class TaxRateForm(forms.ModelForm):
+    starting_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
+
+
+    # def __init__(self, *args, **kwargs):
+    #     user = kwargs.pop('user', None)
+    #     super(TaxRateForm, self).__init__(*args, **kwargs)
+    #     if user:
+    #         self.fields['user'].initial = user
+    class Meta:
+        model = TaxRate
+        fields = ['starting_date','vat_rate','citytax_rate']
+        widgets = {
+            'vat_rate': forms.NumberInput(attrs={'class': 'form-control mb-5'}),
+            'citytax_rate': forms.NumberInput(attrs={'class': 'form-control mb-5'}),
+        }
+
+
 class ReservationForm(forms.ModelForm):
 
-  
     start_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
     end_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
 
@@ -47,6 +62,7 @@ class ReservationForm(forms.ModelForm):
         super(ReservationForm, self).__init__(*args, **kwargs)
         if user:
             self.fields['user'].initial = user
+
     class Meta:
         model = Reservation
         fields = ['start_date','end_date','name', 'lname',  't_sum','commission', 'rech_num' ,'purpose','user', 'apartment', 'platform', 'company', 'email']

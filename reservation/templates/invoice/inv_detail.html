@@ -4,11 +4,9 @@
 <div class = 'border rounded p-3 my-5'>
 
     
-<h1 class="my-5">{{inv.name}}</h1>
+<h1 class="my-5">{{reservation.name}}</h1>
 
-    <p>{{res.name}}</p>
+    <p>{{reservation.name}}</p>
     <a href="{% url 'invoice.list' %}" class="btn btn-secondary my-5">back</a>
-    <a href="{% url 'invoice.update' pk=inv.id %}" class="btn btn-secondary">edit</a>
-    <a href="{% url 'invoice.delete' pk=inv.id %}" class="btn btn-danger">delete</a>
 {% endblock %}
     

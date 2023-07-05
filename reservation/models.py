@@ -61,8 +61,8 @@ class Reservation(models.Model):
     link = models.URLField(blank=True, null=True)
     purpose = models.CharField(max_length=255,choices=PURPOSE_CHOICES, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservation')
-    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, related_name='reservation', blank=True, null=True)
-    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='reservation', blank=True, null=True)
+    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, related_name='reservation', blank=True)
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='reservation', blank=True)
 
     def __str__(self):
         return self.name    
@@ -79,7 +79,7 @@ class Reservation(models.Model):
     def calculate_vat(self):
         mwst_rate = self.get_applicable_tax_rate()
         if mwst_rate:
-            netto_sum = self.t_sum/ (1 + (mwst_rate.vat_rate / 100))
+            netto_sum = self.t_sum #/ (1 + (mwst_rate.vat_rate / 100))
             return self.t_sum - netto_sum
         return 0
 

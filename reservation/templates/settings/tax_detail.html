@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class = 'border rounded p-3 my-5'>
+
+    
+<h1 class="my-5">{{tax.citytax_rate}}</h1>
+
+    <p>{{tax.vat_rate}}</p>
+    <a href="{% url 'taxrate.list' %}" class="btn btn-secondary my-5">back</a>
+    <a href="{% url 'taxrate.update' pk=inv.id %}" class="btn btn-secondary">edit</a>
+    <a href="{% url 'taxrate.delete' pk=inv.id %}" class="btn btn-danger">delete</a>
+{% endblock %}
+    

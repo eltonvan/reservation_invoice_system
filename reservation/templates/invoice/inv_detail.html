@@ -6,7 +6,25 @@
     
 <h1 class="my-5">{{reservation.name}}</h1>
 
-    <p>{{reservation.name}}</p>
+<p>Start Date: {{ reservation.start_date }}</p>
+<p>End Date: {{ reservation.end_date }}</p>
+<p>Name: {{ reservation.name }}</p>
+<p>Last Name: {{ reservation.lname }}</p>
+<p>Address: {{ address }}</p>
+<p>Platform: {{ reservation.platform }}</p>
+<p>Apartment: {{ reservation.apartment }}</p>
+<p>Total Sum: {{ reservation.t_sum }}</p>
+<p>Commission: {{ reservation.commission }}</p>
+<p>Purpose: {{ reservation.purpose }}</p>
+<p>Number of Nights: {{ number_of_nights }}</p>
+
+{% if reservation.purpose == 'holiday' %}
+<p>City Tax: {{ citytax|floatformat:2 }}</p>
+{% endif %} 
+
+<p>VAT: {{ vat|floatformat:2 }}</p>
+<p>Netto: {{ netto|floatformat:2 }}</p>
+
     <a href="{% url 'invoice.list' %}" class="btn btn-secondary my-5">back</a>
 {% endblock %}
     

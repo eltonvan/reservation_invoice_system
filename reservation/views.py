@@ -1,8 +1,5 @@
-from typing import Any, List
-from django.db.models.query import QuerySet
-from django.forms.models import BaseModelForm
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from datetime import datetime
+
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -207,16 +204,6 @@ class InvoiceListView(LoginRequiredMixin, ListView):
     context_object_name = "reservation"  # name used in template
     login_url = LOGIN_URL
 
-    # def get_queryset(self):
-    #     start_date = self.request.GET.get('start_date')
-    #     end_date = self.request.GET.get('end_date')
-    #     queryset = super().get_queryset()
-
-    #     if start_date and end_date:
-    #         queryset = QuerySet.filter(date__range=[start_date, end_date])
-
-    #     return queryset
-
     def get_queryset(self):
         return self.request.user.reservation.all()
 
@@ -225,7 +212,6 @@ class InvoiceDetailView(DetailView):
     model = Reservation
     template_name = "invoice/inv_detail.html"
     context_object_name = "reservation"
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -244,11 +230,4 @@ class InvoiceDetailView(DetailView):
         context['netto'] = netto
 
         return context
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     invoice = self.object.invoice().get(pk=self.object.pk)
-    #     context["number_of_nights"] = invoice.number_of_nights
-    #     context["citytax"] = invoice.citytax
-    #     context["vat"] = invoice.vat
-    #     context["netto"] = invoice.netto
-    #     return context
+

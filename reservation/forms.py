@@ -35,7 +35,7 @@ class ApartmentForm(forms.ModelForm):
 
 
 class TaxRateForm(forms.ModelForm):
-    starting_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
+    start_date = forms.DateField(widget=DateInput(attrs={'class': 'form-control my-5'}))
 
 
     # def __init__(self, *args, **kwargs):
@@ -45,7 +45,7 @@ class TaxRateForm(forms.ModelForm):
     #         self.fields['user'].initial = user
     class Meta:
         model = TaxRate
-        fields = ['starting_date','vat_rate','citytax_rate']
+        fields = ['start_date','vat_rate','citytax_rate']
         widgets = {
             'vat_rate': forms.NumberInput(attrs={'class': 'form-control mb-5'}),
             'citytax_rate': forms.NumberInput(attrs={'class': 'form-control mb-5'}),
@@ -65,13 +65,14 @@ class ReservationForm(forms.ModelForm):
 
     class Meta:
         model = Reservation
-        fields = ['start_date','end_date','name', 'lname',  't_sum','commission', 'rech_num' ,'purpose','user', 'apartment', 'platform', 'company', 'email']
+        fields = ['start_date','end_date', 'name', 'lname',  't_sum', 'address', 'commission', 'rech_num', 'purpose', 'user', 'apartment', 'platform', 'company', 'email']
         widgets = {
 
             'name': forms.TextInput(attrs={'class': 'form-control mb-5'}),
             'lname': forms.TextInput(attrs={'class': 'form-control mb-5'}),
             't_sum': forms.NumberInput(attrs={'class': 'form-control mb-5'}),
             'company': forms.TextInput(attrs={'class': 'form-control mb-5'}),
+            'address': forms.TextInput(attrs={'class': 'form-control mb-5'}),
             'email': forms.EmailInput(attrs={'class': 'form-control mb-5'}),
             'purpose': forms.Select(attrs={'class': 'form-control mb-5'}),
             'commission': forms.NumberInput(attrs={'class': 'form-control mb-5'}),

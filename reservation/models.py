@@ -59,6 +59,7 @@ class Reservation(models.Model):
     company = models.CharField(max_length=255, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    nationality = models.CharField(max_length=255, blank=True, null=True)
     t_sum = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     commission = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True

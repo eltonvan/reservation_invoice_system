@@ -6,6 +6,7 @@ from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 
 
+
 class DateInput(forms.DateInput):
     input_type = "date"
 
@@ -70,8 +71,10 @@ class ReservationForm(forms.ModelForm):
 
         if not self.instance.nationality:
             self.initial['nationality'] = default_country
-        if user:
+        if user and not self.instance.user:
             self.fields["user"].initial = user
+            self.fields['user'].widget = forms.HiddenInput()
+            
 
     class Meta:
         model = Reservation
@@ -85,7 +88,7 @@ class ReservationForm(forms.ModelForm):
             "commission",
             "rech_num",
             "purpose",
-            "user",
+            #"user",
             "apartment",
             "platform",
             "company",

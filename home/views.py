@@ -6,19 +6,27 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic.edit import CreateView
-from django.contrib.auth.forms import UserCreationForm
+#from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
+from .models import CustomUser
+from .forms import CustomUserCreationForm
+
 
 
 class SignupView(CreateView):
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     template_name = 'home/register.html'
     success_url = '/mini/reservation'
+    model = CustomUser
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
             return redirect('reservation.list')
         return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = form.save()
+        return super().form_valid(form)
     
 
 class LogoutInterfaceView(LogoutView):

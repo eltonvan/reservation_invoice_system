@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, DecimalField, Value, When, Case , Q
 from django.contrib.auth.models import User
 from django.forms import CharField
+from home.models import CustomUser
 
 
 class TaxRate(models.Model):
@@ -18,7 +19,7 @@ class TaxRate(models.Model):
 
 class Platform(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="platform", null=True, blank=True
+        CustomUser, on_delete=models.CASCADE, related_name="platform", null=True, blank=True
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -34,7 +35,7 @@ class Platform(models.Model):
 
 class Apartment(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="apartment", null=True, blank=True
+        CustomUser, on_delete=models.CASCADE, related_name="apartment", null=True, blank=True
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -69,7 +70,7 @@ class Reservation(models.Model):
     purpose = models.CharField(
         max_length=255, choices=PURPOSE_CHOICES, blank=True, null=True
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reservation")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="reservation")
     platform = models.ForeignKey(
         Platform, on_delete=models.CASCADE, related_name="reservation", blank=True
     )

@@ -1,11 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  <!-- {% if form.errors %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      There was an error with the form
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      </button>
+    </div>
+  {% endif %} -->
 
-<form method="POST" style="text-align: left ; margin: 0 auto; width: 600px;">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class = "btn btn-secondary" name = 'Submit'/>
-</form>
-
-
+  <div class="custom-container shadow p-4 mb-5 bg-body rounded" style="opacity: 0.8;">
+    <h1>Register</h1>
+    <form method="POST" class="row g-3">
+      {% csrf_token %}
+      <div class="col-md-6">
+        <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
+        {{ form.username }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.password1.id_for_label }}" class="form-label">{{ form.password1.label }}</label>
+        {{ form.password1 }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }}</label>
+        {{ form.password2 }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.country.id_for_label }}" class="form-label">{{ form.country.label }}</label>
+        {{ form.country }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+        {{ form.name }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+        {{ form.last_name }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.street.id_for_label }}" class="form-label">{{ form.street.label }}</label>
+        {{ form.street }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.house_number.id_for_label }}" class="form-label">{{ form.house_number.label }}</label>
+        {{ form.house_number }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.city.id_for_label }}" class="form-label">{{ form.city.label }}</label>
+        {{ form.city }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.zip_code.id_for_label }}" class="form-label">{{ form.zip_code.label }}</label>
+        {{ form.zip_code }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+        {{ form.email }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.birthday.id_for_label }}" class="form-label">{{ form.birthday.label }}</label>
+        {{ form.birthday }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.phone_number.id_for_label }}" class="form-label">{{ form.phone_number.label }}</label>
+        {{ form.phone_number }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.tax_number.id_for_label }}" class="form-label">{{ form.tax_number.label }}</label>
+        {{ form.tax_number }}
+      </div>
+      <div class="col-md-6">
+        <label for="{{ form.bank_account.id_for_label }}" class="form-label">{{ form.bank_account.label }}</label>
+        {{ form.bank_account }}
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-secondary">register now</button>
+      </div>
+    </form>
+  </div>
 {% endblock %}

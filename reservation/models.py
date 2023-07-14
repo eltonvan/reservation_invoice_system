@@ -6,9 +6,11 @@ from home.models import CustomUser
 
 
 class TaxRate(models.Model):
+   
     start_date = models.DateField()
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=7)
     citytax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5)
+    tax_zone = models.CharField(max_length=255, default="DE")
 
     def __str__(self):
         return f"Steuersätze (ab {self.start_date})"

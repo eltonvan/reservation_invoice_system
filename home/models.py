@@ -7,6 +7,7 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=150, blank=True)
     street = models.CharField(max_length=150, blank=True)
     house_number = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=150, blank=True)
     zip_code = models.CharField(max_length=20, blank=True)
     birthday = models.DateField(null=True, blank=True)
     email = models.EmailField(unique=True,blank=True)

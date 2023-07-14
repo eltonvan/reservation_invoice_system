@@ -2,22 +2,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1 class="my-5">tax rates list:</h1>
+    <h1 class="my-5">Tax Rates List</h1>
 
-        <div class="row row-cols3 g-2"> 
-            {% for tax in taxrates %}
-            <div class="col"> 
-                <div class="p-3 border">
-                    <a href="{% url 'taxrate.detail' pk=tax.id %}" class="text-dark text-decoration-non">
-                        <h3>{{tax.citytax_rate}}</h3>
-                    </a>
-                    {{inv.vat_rate }}</br>
-                 
-
-
-                </div>
-            </div>
-            {% endfor %}
-
-        </div> 
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>VAT Rate</th>
+                    <th>City Tax Rate</th>
+                    <th>Start Date</th>
+                    <th>Tax Zone</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tax in taxrates %}
+                <tr>
+                    <td>{{ tax.vat_rate }}</td>
+                    <td>{{ tax.citytax_rate }}</td>
+                    <td>{{ tax.start_date }}</td>
+                    <td>{{ tax.tax_zone }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

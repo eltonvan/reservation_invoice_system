@@ -42,17 +42,14 @@ class ApartmentForm(forms.ModelForm):
 class TaxRateForm(forms.ModelForm):
     start_date = forms.DateField(widget=DateInput(attrs={"class": "form-control my-5"}))
 
-    # def __init__(self, *args, **kwargs):
-    #     user = kwargs.pop('user', None)
-    #     super(TaxRateForm, self).__init__(*args, **kwargs)
-    #     if user:
-    #         self.fields['user'].initial = user
+
     class Meta:
         model = TaxRate
-        fields = ["start_date", "vat_rate", "citytax_rate"]
+        fields = ["start_date", "vat_rate", "citytax_rate", "tax_zone"]
         widgets = {
             "vat_rate": forms.NumberInput(attrs={"class": "form-control mb-5"}),
             "citytax_rate": forms.NumberInput(attrs={"class": "form-control mb-5"}),
+            "tax_zone": forms.TextInput(attrs={"class": "form-control mb-5"}),
         }
 
 

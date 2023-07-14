@@ -2,20 +2,33 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container"></div>
     <h1 class="my-5">reservation list:</h1>
+        <table class="table">
 
-        <div class="row row-cols3 g-2"> 
+        <thead>
+            <tr>
+                <th>Start</th>
+                <th>End</th>
+                <th>Name</th>
+                <th>Family name</th>
+              </tr>
+            </thead>
+            <tbody>
             {% for res in reservation %}
-            <div class="col"> 
-                <div class="p-3 border">
-                    <a href="{% url 'reservation.detail' pk=res.id %}" class="text-dark text-decoration-non">
-                        <h3>{{res.name}}</h3>
-                    </a>
-                    {{res.start_date |truncatechars:10}}
 
-                </div>
-            </div>
+            <tr>
+                <td>{{res.start_date}}</td>
+                <td>{{res.end_date}}</td>
+                <td><a href="{% url 'reservation.detail' pk=res.id %}" class="text-dark text-decoration-non">{{ res.name }}</a></td>
+                <td>{{ res.lname }}</td>
+              </tr>
+
+
+          
             {% endfor %}
 
-        </div> 
+        </tbody>
+    </table>
+    </div>
 {% endblock %}

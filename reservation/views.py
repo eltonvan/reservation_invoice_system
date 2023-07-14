@@ -10,6 +10,7 @@ RESERVATION_URL = "/mini/reservation"
 LOGIN_URL = "/login"
 PLATFORM_URL = "/mini/platform"
 APARTMENT_URL = "/mini/apartment"
+TAX_RATE_URL = "/mini/taxrate"
 
 
 # view of reservation pages
@@ -176,7 +177,7 @@ class TaxRateDetailView(LoginRequiredMixin, DetailView):
 class TaxRateCreateView(LoginRequiredMixin, CreateView):
     model = TaxRate
     template_name = "settings/tax_form.html"
-    success_url = "/mini/settings/taxrate"
+    success_url = TAX_RATE_URL
     form_class = TaxRateForm
     login_url = LOGIN_URL
 
@@ -190,7 +191,7 @@ class TaxRateCreateView(LoginRequiredMixin, CreateView):
 class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
     model = TaxRate
     template_name = "settings/tax_form.html"
-    success_url = "/mini/settings/taxrate"
+    success_url = TAX_RATE_URL
     form_class = TaxRateForm
     login_url = LOGIN_URL
 

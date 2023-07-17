@@ -195,6 +195,12 @@ class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
     form_class = TaxRateForm
     login_url = LOGIN_URL
 
+class TaxRateDeleteView(LoginRequiredMixin, DeleteView):
+    model = TaxRate
+    success_url = TAX_RATE_URL
+    template_name = "settings/tax_delete.html"
+    login_url = LOGIN_URL
+
 
 # invoice pages
 
@@ -217,6 +223,7 @@ class InvoiceDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         reservation = self.object
+        print(reservation)
 
         # Calculate the required fields
         number_of_nights = (reservation.end_date - reservation.start_date).days

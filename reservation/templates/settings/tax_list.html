@@ -8,6 +8,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th></th>
                     <th>VAT Rate</th>
                     <th>City Tax Rate</th>
                     <th>Start Date</th>
@@ -17,6 +18,7 @@
             <tbody>
                 {% for tax in taxrates %}
                 <tr>
+                    <td><a href="{% url 'taxrate.detail' pk=tax.id %}/edit" class="text-dark text-decoration-none">{{ tax.id }}</a></td>
                     <td>{{ tax.vat_rate }}</td>
                     <td>{{ tax.citytax_rate }}</td>
                     <td>{{ tax.start_date }}</td>

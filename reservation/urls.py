@@ -24,6 +24,7 @@ urlpatterns = [
     path('taxrate/<int:pk>', views.TaxRateDetailView.as_view(), name='taxrate.detail'),
     path('taxrate/<int:pk>/edit', views.TaxRateUpdateView.as_view(), name='taxrate.update'),
     path('taxrate/new', views.TaxRateCreateView.as_view(), name='taxrate.new'),
+    path('taxrate/<int:pk>/delete', views.TaxRateDeleteView.as_view(), name='taxrate.delete'),
     
 
 

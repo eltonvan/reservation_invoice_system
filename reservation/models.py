@@ -6,10 +6,11 @@ from home.models import CustomUser
 
 
 class TaxRate(models.Model):
-   
+    id = models.AutoField(primary_key=True)
     start_date = models.DateField()
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=7)
     citytax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5)
+    full_vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=12)
     tax_zone = models.CharField(max_length=255, default="DE")
 
     def __str__(self):
@@ -119,24 +120,30 @@ class Reservation(models.Model):
 
     def get_platform_address(self):
         return self.platform.address
+    
+    
+class Invoice(models.Model):
+    reservation = models.OneToOneField(Reservation, on_delete=models.CASCADE)
 
-    @classmethod
-    def invoice(cls):
-        return cls.objects.annotate(
-            number_of_nights=ExpressionWrapper(
-                F("end_date") - F("start_date"),
-                output_field=DecimalField(),
-            ),
-            citytax=ExpressionWrapper(
-                F("calculate_citytax")(),
-                output_field=DecimalField(),
-            ),
-            vat=ExpressionWrapper(
-                F("calculate_vat")(),
-                output_field=DecimalField(),
-            ),
-            netto=ExpressionWrapper(
-                F("calculate_netto")(),
-                output_field=DecimalField(),
-            ),
-        )
+
+    # @classmethod
+    # def invoice(cls):
+        
+    #     return cls.objects.annotate(
+    #         number_of_nights=ExpressionWrapper(
+    #             F("end_date") - F("start_date"),
+    #             output_field=DecimalField(),
+    #         ),
+    #         citytax=ExpressionWrapper(
+    #             F("calculate_citytax")(),
+    #             output_field=DecimalField(),
+    #         ),
+    #         vat=ExpressionWrapper(
+    #             F("calculate_vat")(),
+    #             output_field=DecimalField(),
+    #         ),
+    #         netto=ExpressionWrapper(
+    #             F("calculate_netto")(),
+    #             output_field=DecimalField(),
+    #         ),
+    #     )

@@ -2,28 +2,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1 class="my-5">invoice list:</h1>
+    <h1 class="my-5">invoice List</h1>
 
-        <div class="row row-cols3 g-2"> 
-            {% for inv in reservation %}
-            <div class="col"> 
-                <div class="p-3 border">
-                    <a href="{% url 'invoice.detail' pk=inv.id %}" class="text-dark text-decoration-non">
-                        <h3>{{inv.name}}</h3>
-                    </a>
-                    {{inv.start_date }}</br>
-                    {{inv.end_date }}</br>
-                    {{inv.name }}</br>
-                    {{inv.lname }}</br>
-                    {{inv.t_sum }}</br>
-                    {{inv.apartment }}</br>
-                    {{inv.platform }}</br>
-                    {{inv.purpose }}</br>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>start date</th>
+                    <th>end date</th>
+                    <th>name</th>
+                    <th>family name</th>
+                    <th>total sum</th>
+                    <th>apartment</th>
+                    <th>platform</th>
+                    <th>purpose</th>
 
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in reservation %}
+                <tr>
+                    <td><a href="{% url 'invoice.detail' pk=inv.id %}/edit" class="text-dark text-decoration-none">{{ inv.id }}</a></td>
+                    <td>{{ inv.start_date }}</td>
+                    <td>{{ inv.end_date }}</td>
+                    <td>{{ inv.name }}</td>
+                    <td>{{ inv.lname }}</td>
+                    <td>{{ inv.t_sum }}</td>
+                    <td>{{ inv.apartment }}</td>
+                    <td>{{ inv.platform }}</td>
+                    <td>{{ inv.purpose }}</td>
 
-                </div>
-            </div>
-            {% endfor %}
-
-        </div> 
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -10,10 +10,11 @@ class TaxRate(models.Model):
     start_date = models.DateField()
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=7)
     citytax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5)
-    tax_zone = models.CharField(max_length=255, default="DE")
+    full_vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=19)
+    tax_zone = models.CharField(max_length=255, default="Germany")
 
     def __str__(self):
-        return f"Steuersätze (ab {self.start_date})"
+        return f"Steuersätze (ab {self.start_date}, {self.tax_zone}, {self.vat_rate}%, {self.citytax_rate}%)"
 
     class Meta:
         ordering = ["-start_date"]
@@ -86,25 +87,31 @@ class Reservation(models.Model):
     def get_applicable_tax_rate(self):
         """Returns the  most recent tax rate applicable for the reservation"""
         try:
-            return TaxRate.objects.filter(start_date__lte=self.start_date).latest(
+            
+            result = TaxRate.objects.filter(start_date__lte=self.start_date).latest(
                 "start_date"
             )
+            print(result)
+            return result
+            
         except TaxRate.DoesNotExist:
+            print("No tax rate found")
             return None
 
     def calculate_vat(self):
         tax_rate = self.get_applicable_tax_rate()
         if tax_rate:
-            netto_sum = self.t_sum / (1 + (tax_rate.vat_rate / 100))
-            return self.t_sum - netto_sum
+            sum_no_vat = self.t_sum / (1 + (tax_rate.vat_rate / 100))
+            return self.t_sum - sum_no_vat
         return 0
 
     def calculate_citytax(self):
         tax_rate = self.get_applicable_tax_rate()
         if tax_rate:
-            netto_sum = (self.t_sum - self.calculate_vat()) / (
+            sum_no_vat = self.t_sum / (1 + (tax_rate.vat_rate / 100))   
+            sum_no_vat_no_citytax = (self.t_sum - self.calculate_vat()) / (
                 1 + (tax_rate.citytax_rate / 100))
-            return self.t_sum - self.calculate_vat() - netto_sum
+            return sum_no_vat - sum_no_vat_no_citytax
 
         return 0
 
@@ -120,23 +127,4 @@ class Reservation(models.Model):
     def get_platform_address(self):
         return self.platform.address
 
-    @classmethod
-    def invoice(cls):
-        return cls.objects.annotate(
-            number_of_nights=ExpressionWrapper(
-                F("end_date") - F("start_date"),
-                output_field=DecimalField(),
-            ),
-            citytax=ExpressionWrapper(
-                F("calculate_citytax")(),
-                output_field=DecimalField(),
-            ),
-            vat=ExpressionWrapper(
-                F("calculate_vat")(),
-                output_field=DecimalField(),
-            ),
-            netto=ExpressionWrapper(
-                F("calculate_netto")(),
-                output_field=DecimalField(),
-            ),
-        )
+    

@@ -1,30 +1,59 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class = 'border rounded p-3 my-5'>
+<style>
+    @media print {
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .invoice {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    
-<h1 class="my-5">{{reservation.name}}</h1>
+        .invoice h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
 
-<p>Start Date: {{ reservation.start_date }}</p>
-<p>End Date: {{ reservation.end_date }}</p>
-<p>Name: {{ reservation.name }}</p>
-<p>Last Name: {{ reservation.lname }}</p>
-<p>Address: {{ address }}</p>
-<p>Platform: {{ reservation.platform }}</p>
-<p>Apartment: {{ reservation.apartment }}</p>
-<p>Total Sum: {{ reservation.t_sum }}</p>
-<p>Commission: {{ reservation.commission }}</p>
-<p>Purpose: {{ reservation.purpose }}</p>
-<p>Number of Nights: {{ number_of_nights }}</p>
+        .invoice p {
+            margin-bottom: 10px;
+        }
 
-{% if reservation.purpose == 'holiday' %}
-<p>City Tax: {{ citytax|floatformat:2 }}</p>
-{% endif %} 
+        .invoice .btn {
+            display: none;
+        }
+    }
+</style>
 
-<p>VAT: {{ vat|floatformat:2 }}</p>
-<p>Netto: {{ netto|floatformat:2 }}</p>
+<div class="invoice">
+    <h1>{{ reservation.name }}</h1>
+    <p>Start Date: {{ reservation.start_date }}</p>
+    <p>End Date: {{ reservation.end_date }}</p>
+    <p>Name: {{ reservation.name }}</p>
+    <p>Last Name: {{ reservation.lname }}</p>
+    <p>Address: {{ reservation.address }}</p>
+    <p>Platform: {{ reservation.platform }}</p>
+    <p>Apartment: {{ reservation.apartment }}</p>
+    <p>Total Sum: {{ reservation.t_sum }}</p>
+    <p>Commission: {{ reservation.commission }}</p>
+    <p>Purpose: {{ reservation.purpose }}</p>
+    <p>Number of Nights: {{ number_of_nights }}</p>
 
-    <a href="{% url 'invoice.list' %}" class="btn btn-secondary my-5">back</a>
+    {% if reservation.purpose == 'holiday' %}
+        <p>City Tax: {{ citytax|floatformat:2 }}</p>
+    {% endif %}
+
+    <p>VAT: {{ vat|floatformat:2 }}</p>
+    <p>Netto: {{ netto|floatformat:2 }}</p>
+
+    <a href="{% url 'invoice.list' %}" class="btn btn-secondary my-5">Back</a>
+</div>
 {% endblock %}
-    

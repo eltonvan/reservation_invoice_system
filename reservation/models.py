@@ -1,12 +1,11 @@
 from django.db import models
-from django.db.models import F, ExpressionWrapper, DecimalField, Value, When, Case , Q
+from django.db.models import F, ExpressionWrapper, DecimalField, Value, When, Case, Q
 from django.contrib.auth.models import User
 from django.forms import CharField
 from home.models import CustomUser
 
 
 class TaxRate(models.Model):
-   
     start_date = models.DateField()
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=7)
     citytax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5)
@@ -22,7 +21,11 @@ class TaxRate(models.Model):
 
 class Platform(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="platform", null=True, blank=True
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="platform",
+        null=True,
+        blank=True,
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, blank=True)
@@ -38,7 +41,11 @@ class Platform(models.Model):
 
 class Apartment(models.Model):
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="apartment", null=True, blank=True
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="apartment",
+        null=True,
+        blank=True,
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -63,6 +70,7 @@ class Reservation(models.Model):
     company = models.CharField(max_length=255, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    number_of_guests = models.IntegerField(blank=True, null=True)
     nationality = models.CharField(max_length=255, blank=True, null=True)
     t_sum = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     commission = models.DecimalField(
@@ -73,7 +81,9 @@ class Reservation(models.Model):
     purpose = models.CharField(
         max_length=255, choices=PURPOSE_CHOICES, blank=True, null=True
     )
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="reservation")
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="reservation"
+    )
     platform = models.ForeignKey(
         Platform, on_delete=models.CASCADE, related_name="reservation", blank=True
     )
@@ -84,16 +94,30 @@ class Reservation(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        invoice_id = self.id
+        invoice = Invoice(
+            id=invoice_id,
+            name=self.name,
+            invoice_netto=self.calculate_netto(),
+            invoice_vat=self.calculate_vat(),
+            invoice_citytax=self.calculate_citytax(),
+            invoice_number_of_nights=self.number_of_nights(),
+            reservation=self,
+        )
+        invoice.save()
+
     def get_applicable_tax_rate(self):
         """Returns the  most recent tax rate applicable for the reservation"""
         try:
-            
             result = TaxRate.objects.filter(start_date__lte=self.start_date).latest(
                 "start_date"
             )
             print(result)
             return result
-            
+
         except TaxRate.DoesNotExist:
             print("No tax rate found")
             return None
@@ -108,9 +132,10 @@ class Reservation(models.Model):
     def calculate_citytax(self):
         tax_rate = self.get_applicable_tax_rate()
         if tax_rate:
-            sum_no_vat = self.t_sum / (1 + (tax_rate.vat_rate / 100))   
+            sum_no_vat = self.t_sum / (1 + (tax_rate.vat_rate / 100))
             sum_no_vat_no_citytax = (self.t_sum - self.calculate_vat()) / (
-                1 + (tax_rate.citytax_rate / 100))
+                1 + (tax_rate.citytax_rate / 100)
+            )
             return sum_no_vat - sum_no_vat_no_citytax
 
         return 0
@@ -123,8 +148,30 @@ class Reservation(models.Model):
             return self.t_sum - citytax - vat
         else:
             return self.t_sum - vat
+        
+    def number_of_nights(self):
+        """returns the number of nights"""
+        return (self.end_date - self.start_date).days
+    
 
     def get_platform_address(self):
         return self.platform.address
 
-    
+
+class Invoice(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    invoice_netto = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    reservation = models.ForeignKey(
+        Reservation, on_delete=models.CASCADE, related_name="invoices"
+    )
+    invoice_vat = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    invoice_citytax = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    invoice_number_of_nights = models.IntegerField(blank=True, null=True)
+

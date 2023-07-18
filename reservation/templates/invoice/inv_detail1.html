@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="invoice">
+    <table class="table">
+        <tr align="left">
+            <td>
+                <h1>apartment rental ltd</h1>
+                <p>genericstr.  555666 Berlin</p>
+                <p>tax number 22334455</p>
+            </td>
+            <td>
+                <td>
+
+                </td>
+            </td>
+        </tr>
+    </table>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>
+                <h4>to: {{ invoices.reservation.name }} {{ invoices.reservation.lname }}</h4>
+                <p>address: {{ invoices.reservation.address }}</p>
+            </th>
+            <td></td>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Number of Nights</th>
+                <th>Number of Guests</th>
+                <th>Invoice Netto</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ invoices.reservation.start_date }}</td>
+                <td>{{ invoices.reservation.end_date }}</td>
+                <td>{{ invoices.invoice_number_of_nights }}</td>
+                <td>{{ invoices.reservation.number_of_guests }}</td>
+                <td>{{ invoices.invoice_netto|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>City Tax:</td>
+                <td>{{ invoices.invoice_citytax|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>VAT:</td>
+                <td>{{ invoices.invoice_vat }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total:</td>
+                <td>{{ invoices.reservation.t_sum }}</td>
+            </tr>
+        </tbody>
+    </table>
+<div align = "left">
+
+please pay immidiatly! <br>
+bank account number 44556677 <br>
+
+
+<div class="text-center">
+    {% if invoices.previous %}
+        <a href="{% url 'invoice1.detail' pk=invoices.previous.pk %}" class="btn btn-secondary mx-2">Previous</a>
+    {% endif %}
+    {% if invoices.next %}
+        <a href="{% url 'invoice1.detail' pk=invoices.next.pk %}" class="btn btn-secondary mx-2">Next</a>
+    {% endif %}
+</div>
+</div>
+<a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">Back</a>
+</div>
+{% endblock %}

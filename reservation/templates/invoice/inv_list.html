@@ -5,20 +5,18 @@
     <h1 class="my-5">invoice list:</h1>
 
         <div class="row row-cols3 g-2"> 
-            {% for inv in reservation %}
+            {% for inv in invoices %}
             <div class="col"> 
                 <div class="p-3 border">
-                    <a href="{% url 'invoice.detail' pk=inv.id %}" class="text-dark text-decoration-non">
-                        <h3>{{inv.name}}</h3>
+                    <a href="{% url 'invoice1.detail' pk=inv.id %}" class="text-dark text-decoration-non">
+                        <h3>{{inv.start_date}}</h3>
                     </a>
-                    {{inv.start_date }}</br>
+                    
                     {{inv.end_date }}</br>
                     {{inv.name }}</br>
                     {{inv.lname }}</br>
                     {{inv.t_sum }}</br>
-                    {{inv.apartment }}</br>
-                    {{inv.platform }}</br>
-                    {{inv.purpose }}</br>
+                 
 
 
                 </div>

@@ -85,7 +85,7 @@ class ReservationForm(forms.ModelForm):
             "commission",
             "rech_num",
             "purpose",
-            #"user",
+            "number_of_guests",
             "apartment",
             "platform",
             "company",
@@ -99,6 +99,7 @@ class ReservationForm(forms.ModelForm):
             "company": forms.TextInput(attrs={"class": "form-control mb-5"}),
             "address": forms.TextInput(attrs={"class": "form-control mb-5"}),
             "email": forms.EmailInput(attrs={"class": "form-control mb-5"}),
+            "number_of_guests": forms.NumberInput(attrs={"class": "form-control mb-5"}),
             #'nationality': CountrySelectWidget(attrs={'class': 'form-control mb-5'}),
             "purpose": forms.Select(attrs={"class": "form-control mb-5"}),
             "commission": forms.NumberInput(attrs={"class": "form-control mb-5"}),
@@ -108,4 +109,3 @@ class ReservationForm(forms.ModelForm):
             "apartment": forms.Select(attrs={"class": "form-control mb-5"}),
             "platform": forms.Select(attrs={"class": "form-control mb-5"}),
         }
-        # labels = {'start_date': 'Check-in', 'end_date': 'Checkout', 'num_guests': 'Number of Guests', 'fname': 'First Name', 'lname': 'Last Name', 'email': 'Email', 'purpose': 'Purpose', 'company': 'Company', 't_sum': 'Total Sum', 'commission': 'Commission', 'rech_num': 'Rechnung Number', 'link_reservation': 'Link Reservation', 'guest_document': 'Guest Document', 'apartment': 'Apartment', 'platform': 'Platform'}

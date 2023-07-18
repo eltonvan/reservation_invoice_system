@@ -19,6 +19,8 @@ urlpatterns = [
     path('apartment/<int:pk>/delete', views.AptDeleteView.as_view(), name = 'apartment.delete'),
     path('apartment/new', views.AptCreateView.as_view(), name = 'apartment.new'),
     path('invoice/<int:pk>/', views.InvoiceDetailView.as_view(), name='invoice.detail'),
+    path('invoice1/<int:pk>/', views.InvoiceDetailedView.as_view(), name='invoice1.detail'),
+
     path('invoice', views.InvoiceListView.as_view(), name='invoice.list'),
     path('taxrate', views.TaxRateListView.as_view(), name='taxrate.list'),
     path('taxrate/<int:pk>', views.TaxRateDetailView.as_view(), name='taxrate.detail'),

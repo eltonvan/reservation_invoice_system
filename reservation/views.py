@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm
-from .models import Reservation, Platform, Apartment, TaxRate
+from .models import Reservation, Platform, Apartment, TaxRate, Invoice
 
 RESERVATION_URL = "/mini/reservation"
 LOGIN_URL = "/login"
@@ -232,3 +232,29 @@ class InvoiceDetailView(DetailView):
 
         return context
 
+class InvoiceDetailedView(DetailView):
+    model = Invoice
+    template_name = "invoice/inv_detail1.html"
+    context_object_name = "invoices"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        invoice = self.object
+        reservation = invoice.reservation
+
+        context['invoices'] = invoice
+        context['reservation'] = reservation
+
+        return context
+
+        # number_of_nights = (reservation.end_date - reservation.start_date).days
+        # citytax = reservation.calculate_citytax()
+        # vat = reservation.calculate_vat()
+        # netto = reservation.calculate_netto()
+
+        # context['number_of_nights'] = number_of_nights
+        # context['citytax'] = citytax
+        # context['vat'] = vat
+        # context['netto'] = netto
+
+        return context

@@ -8,6 +8,7 @@
 
         <thead>
             <tr>
+               <th>Invoice</th>
                 <th>Start</th>
                 <th>End</th>
                 <th>Name</th>
@@ -18,6 +19,7 @@
             {% for res in reservation %}
 
             <tr>
+                <td><a href="{% url 'invoice1.detail' pk=res.id %}" class="text-dark text-decoration-non">{{ res.id }}</a></td>
                 <td>{{res.start_date}}</td>
                 <td>{{res.end_date}}</td>
                 <td><a href="{% url 'reservation.detail' pk=res.id %}" class="text-dark text-decoration-non">{{ res.name }}</a></td>

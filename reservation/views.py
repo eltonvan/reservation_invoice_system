@@ -5,6 +5,9 @@ from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm
 from .models import Reservation, Platform, Apartment, TaxRate, Invoice
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect
+from django.db.models import F
 
 RESERVATION_URL = "/mini/reservation"
 LOGIN_URL = "/login"
@@ -49,7 +52,7 @@ class ResListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
 
     def get_queryset(self):
-        return self.request.user.reservation.all()
+        return self.request.user.reservation.order_by(F('start_date').asc())
 
 
 class ResDetailView(DetailView):
@@ -199,14 +202,45 @@ class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
 # invoice pages
 
 
+
+    # model = Reservation
+    # template_name = "invoice/inv_list.html"
+    # context_object_name = "reservation"  # name used in template
+    # login_url = LOGIN_URL
+
+    # def get_queryset(self):
+    #     return self.request.user.reservation.all()
+
+
 class InvoiceListView(LoginRequiredMixin, ListView):
-    model = Reservation
+    model = Invoice
     template_name = "invoice/inv_list.html"
-    context_object_name = "reservation"  # name used in template
+    context_object_name = "invoices"
     login_url = LOGIN_URL
+    paginate_by = 1  # Set the number of invoices per page
 
     def get_queryset(self):
-        return self.request.user.reservation.all()
+        return self.request.user.invoices.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        invoices = context['invoices']
+
+        paginator = Paginator(invoices, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['invoices'] = page_obj
+
+        # Add previous and next buttons to the context
+        current_page_number = page_obj.number
+        total_pages = paginator.num_pages
+        context['has_previous'] = current_page_number > 1
+        context['previous_page_number'] = current_page_number - 1 if current_page_number > 1 else None
+        context['has_next'] = current_page_number < total_pages
+        context['next_page_number'] = current_page_number + 1 if current_page_number < total_pages else None
+
+        return context
 
 
 class InvoiceDetailView(DetailView):
@@ -247,14 +281,6 @@ class InvoiceDetailedView(DetailView):
 
         return context
 
-        # number_of_nights = (reservation.end_date - reservation.start_date).days
-        # citytax = reservation.calculate_citytax()
-        # vat = reservation.calculate_vat()
-        # netto = reservation.calculate_netto()
 
-        # context['number_of_nights'] = number_of_nights
-        # context['citytax'] = citytax
-        # context['vat'] = vat
-        # context['netto'] = netto
 
-        return context
+ 

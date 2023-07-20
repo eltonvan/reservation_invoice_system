@@ -74,15 +74,17 @@ please pay immidiatly! <br>
 bank account number 44556677 <br>
 
 
-<div class="text-center">
-    {% if invoices.previous %}
-        <a href="{% url 'invoice1.detail' pk=invoices.previous.pk %}" class="btn btn-secondary mx-2">Previous</a>
-    {% endif %}
-    {% if invoices.next %}
-        <a href="{% url 'invoice1.detail' pk=invoices.next.pk %}" class="btn btn-secondary mx-2">Next</a>
-    {% endif %}
-</div>
 </div>
 <a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">Back</a>
+</div> 
+
+<div class="text-center">
+    {% if has_previous %}
+        <a href="?page={{ previous_page_number }}" class="btn btn-secondary mx-2">Previous</a>
+    {% endif %}
+    {% if has_next %}
+        <a href="?page={{ next_page_number }}" class="btn btn-secondary mx-2">Next</a>
+    {% endif %}
 </div>
+
 {% endblock %}

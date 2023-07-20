@@ -91,6 +91,7 @@ class ReservationForm(forms.ModelForm):
             "company",
             "email",
             "nationality",
+            "comment",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control mb-5"}),
@@ -100,7 +101,6 @@ class ReservationForm(forms.ModelForm):
             "address": forms.TextInput(attrs={"class": "form-control mb-5"}),
             "email": forms.EmailInput(attrs={"class": "form-control mb-5"}),
             "number_of_guests": forms.NumberInput(attrs={"class": "form-control mb-5"}),
-            #'nationality': CountrySelectWidget(attrs={'class': 'form-control mb-5'}),
             "purpose": forms.Select(attrs={"class": "form-control mb-5"}),
             "commission": forms.NumberInput(attrs={"class": "form-control mb-5"}),
             "rech_num": forms.TextInput(attrs={"class": "form-control mb-5"}),
@@ -108,4 +108,5 @@ class ReservationForm(forms.ModelForm):
             "user": forms.Select(attrs={"class": "form-control mb-5"}),
             "apartment": forms.Select(attrs={"class": "form-control mb-5"}),
             "platform": forms.Select(attrs={"class": "form-control mb-5"}),
+            "comment": forms.Textarea(attrs={"class": "form-control mb-5"}),
         }

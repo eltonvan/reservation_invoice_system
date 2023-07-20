@@ -12,7 +12,12 @@
                 <th>Start</th>
                 <th>End</th>
                 <th>Name</th>
-                <th>Family name</th>
+                <th>guests</th>
+                <th>nationlity</th>
+                <th>apartment</th>
+                <th>platform</th>
+                <th>comment</th>
+                <th>sum</th>
               </tr>
             </thead>
             <tbody>
@@ -22,8 +27,13 @@
                 <td><a href="{% url 'invoice1.detail' pk=res.id %}" class="text-dark text-decoration-non">{{ res.id }}</a></td>
                 <td>{{res.start_date}}</td>
                 <td>{{res.end_date}}</td>
-                <td><a href="{% url 'reservation.detail' pk=res.id %}" class="text-dark text-decoration-non">{{ res.name }}</a></td>
-                <td>{{ res.lname }}</td>
+                <td><a href="{% url 'reservation.detail' pk=res.id %}" class="text-dark text-decoration-non">{{ res.name }}  {{ res.lname }}</a></td>
+                <td>{{res.number_of_guests}}</td>
+                <td>{{res.nationality}}</td>
+                <td>{{res.apartment}}</td>
+                <td>{{res.platform}}</td>
+                <td>{{res.comment | truncatechars:30  }}</td>
+                <td>{{res.t_sum}}</td>
               </tr>
 
 

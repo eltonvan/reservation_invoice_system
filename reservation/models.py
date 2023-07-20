@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import F, ExpressionWrapper, DecimalField, Value, When, Case, Q
 from django.contrib.auth.models import User
 from django.forms import CharField
 from home.models import CustomUser
@@ -81,6 +80,7 @@ class Reservation(models.Model):
     purpose = models.CharField(
         max_length=255, choices=PURPOSE_CHOICES, blank=True, null=True
     )
+    comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="reservation"
     )

@@ -4,11 +4,17 @@ from home import models
 from .models import Reservation, User, Platform, Apartment, TaxRate
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
+from django import forms
+from django.forms.widgets import DateInput
 
 
+
+
+    
 
 class DateInput(forms.DateInput):
     input_type = "date"
+    input_formats = ['%d-%m-%Y']
 
 
 class PlatformForm(forms.ModelForm):

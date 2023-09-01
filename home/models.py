@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+
+
 class CustomUser(AbstractUser):
     name = models.CharField(max_length=150,blank=True)
     last_name = models.CharField(max_length=150, blank=True)
@@ -15,3 +17,5 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=20, blank=True)
     tax_number = models.CharField(max_length=50, blank=True)
     bank_account = models.CharField(max_length=50, blank=True)
+    invoices = models.ManyToManyField('reservation.Invoice', blank=True)
+

@@ -8,8 +8,10 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>VAT Rate</th>
+                    <th>user</th>
+                    <th>reduced VAT Rate</th>
                     <th>City Tax Rate</th>
+                    <th>full vat Rate</th>
                     <th>Start Date</th>
                     <th>Tax Zone</th>
                 </tr>
@@ -17,8 +19,10 @@
             <tbody>
                 {% for tax in taxrates %}
                 <tr>
+                    <td>{{ tax.user.id }}</td>
                     <td>{{ tax.vat_rate }}</td>
                     <td>{{ tax.citytax_rate }}</td>
+                    <td>{{ tax.full_vat_rate }}</td>
                     <td>{{ tax.start_date }}</td>
                     <td>{{ tax.tax_zone }}</td>
                 </tr>

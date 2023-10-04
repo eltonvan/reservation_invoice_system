@@ -5,6 +5,13 @@ from home.models import CustomUser
 
 
 class TaxRate(models.Model):
+    user = models.ForeignKey(
+    CustomUser,
+    on_delete=models.CASCADE,
+    related_name="taxrates",
+    null=True,
+    blank=True,
+    )
     start_date = models.DateField()
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=7)
     citytax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5)

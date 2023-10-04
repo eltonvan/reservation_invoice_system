@@ -54,6 +54,7 @@ class TaxRateForm(forms.ModelForm):
 
 
 class ReservationForm(forms.ModelForm):
+    
     start_date = forms.DateField(widget=DateInput(attrs={"class": "form-control my-5"}))
     end_date = forms.DateField(widget=DateInput(attrs={"class": "form-control my-5"}))
     nationality = CountryField().formfield(
@@ -61,17 +62,23 @@ class ReservationForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        
         user = kwargs.pop("user", None)
         super(ReservationForm, self).__init__(*args, **kwargs)
 
-        default_country = 'DE'  # Replace 'US' with the desired default country code
+        default_country = 'DE'  
 
         if not self.instance.nationality:
             self.initial['nationality'] = default_country
         if user and not self.instance.user:
             self.fields["user"].initial = user
             self.fields['user'].widget = forms.HiddenInput()
-            
+           
+        # if user:
+        #     user_apartments = Apartment.objects.filter(user=user)
+        #     self.fields["apartment"].queryset = user_apartments
+        
+        
 
     class Meta:
         model = Reservation
@@ -110,3 +117,5 @@ class ReservationForm(forms.ModelForm):
             "platform": forms.Select(attrs={"class": "form-control mb-5"}),
             "comment": forms.Textarea(attrs={"class": "form-control mb-5"}),
         }
+
+

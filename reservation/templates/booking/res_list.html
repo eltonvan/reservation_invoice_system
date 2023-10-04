@@ -4,6 +4,21 @@
 {% block content %}
 <div class="container"></div>
     <h1 class="my-5">reservation list:</h1>
+    <form method="get">
+      <label for="start_date">Start Date:</label>
+      <input type="date" name="start_date" id="start_date">
+      
+      <label for="end_date">End Date:</label>
+      <input type="date" name="end_date" id="end_date">
+      
+      <label for="name">Name:</label>
+      <input type="text" name="name" id="name">
+      
+      <button type="submit">Filter</button>
+
+      <button type="button" id="clear-filter">Clear</button>
+
+  </form>
         <table class="table">
 
         <thead>
@@ -39,7 +54,11 @@
 
           
             {% endfor %}
-
+          <script>
+              document.getElementById('clear-filter').addEventListener('click', function() {
+                window.location.href = window.location.pathname;
+              });
+          </script>
         </tbody>
     </table>
     </div>

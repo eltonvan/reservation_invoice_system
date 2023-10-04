@@ -52,9 +52,21 @@ class ResListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
 
     def get_queryset(self):
-        return self.request.user.reservation.order_by(F('start_date').asc())
+        queryset =  self.request.user.reservation.order_by(F('start_date').asc())
 
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
 
+        name = self.request.GET.get('name')
+
+        
+        if start_date and end_date:
+            queryset = queryset.filter(start_date__gte=start_date, end_date__lte=end_date)
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+        
+        return queryset
 class ResDetailView(DetailView):
     model = Reservation
     template_name = "booking/res_detail.html"
@@ -167,7 +179,9 @@ class TaxRateListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
 
     def get_queryset(self):
-        return TaxRate.objects.all()
+        #return TaxRate.objects.all()
+        return self.request.user.taxrates.all()
+        
     
     
 class TaxRateDetailView(LoginRequiredMixin, DetailView):
@@ -273,6 +287,18 @@ class InvoiceDetailedView(DetailView):
     model = Invoice
     template_name = "invoice/inv_detail1.html"
     context_object_name = "invoices"
+
+    def get_template_names(self):
+        invoice = self.get_object()
+        reservation = invoice.reservation
+
+        if self.request.user.country == 'Poland':
+            return ["invoice/inv_detail_pl.html"]
+        else:
+            return ["invoice/inv_detail1.html"]
+    
+
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

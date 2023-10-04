@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="invoice">
+    <table class="table">
+        <tr align="left">
+            <td>
+                <!-- TODO! take data from user settings -->
+                <h1>apartmenti Szklarska Poreba</h1>
+                <p>fordonska 123 Bydgoszcz </p>
+                <p>tax nummer 12345</p>
+            </td>
+            <td>
+                <td>
+
+                </td>
+            </td>
+        </tr>
+    </table>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>
+                <h4>to: {{ invoices.reservation.name }} {{ invoices.reservation.lname }}</h4>
+                <p>address: {{ invoices.reservation.address }}</p>
+            </th>
+            <td></td>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Number of Nights</th>
+                <th>Number of Guests</th>
+                <th>Invoice Netto</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ invoices.reservation.start_date }}</td>
+                <td>{{ invoices.reservation.end_date }}</td>
+                <td>{{ invoices.invoice_number_of_nights }}</td>
+                <td>{{ invoices.reservation.number_of_guests }}</td>
+                <td>{{ invoices.invoice_netto|floatformat:2 }}</td>
+            </tr>
+     
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>VAT:</td>
+                <td>{{ invoices.invoice_vat }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total:</td>
+                <td>{{ invoices.reservation.t_sum }}</td>
+            </tr>
+        </tbody>
+    </table>
+<div align = "left">
+
+Prosze pay immidiatly! <br>
+bank account number 44556677 <br>
+
+
+</div>
+<a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">Back</a>
+</div> 
+
+<div class="text-center">
+    {% if has_previous %}
+        <a href="?page={{ previous_page_number }}" class="btn btn-secondary mx-2">Previous</a>
+    {% endif %}
+    {% if has_next %}
+        <a href="?page={{ next_page_number }}" class="btn btn-secondary mx-2">Next</a>
+    {% endif %}
+</div>
+
+{% endblock %}

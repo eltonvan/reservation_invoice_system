@@ -16,6 +16,8 @@ APARTMENT_URL = "/mini/apartment"
 TAX_RATE_URL = "/mini/taxrate"
 
 
+
+
 # view of reservation pages
 class ResDeleteView(LoginRequiredMixin, DeleteView):
     model = Reservation
@@ -32,17 +34,63 @@ class ResUpdateView(LoginRequiredMixin, UpdateView):
     login_url = LOGIN_URL
 
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ReservationForm(instance=self.object, user=request.user)
+        return render(request, "booking/res_form.html", {"form": form})
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user 
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+
+
 class ResCreateView(LoginRequiredMixin, CreateView):
+
     model = Reservation
     template_name = "booking/res_form.html"
     success_url = RESERVATION_URL
-    form_class = ReservationForm
+
+
+    fields = [
+            "start_date",
+            "end_date",
+            "name",
+            "lname",
+            "t_sum",
+            "address",
+            "commission",
+            "rech_num",
+            "purpose",
+            "number_of_guests",
+            "apartment",
+            "platform",
+            "company",
+            "email",
+            "nationality",
+            "comment",
+           
+        ]
+
+    def get(self, request, *args, **kwargs):
+        form = ReservationForm(user=request.user)
+        print("print on view", request.user)
+        return render(request, "booking/res_form.html", {"form": form})
+    
+
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+    
+    
+
+
+
 
 
 class ResListView(LoginRequiredMixin, ListView):
@@ -293,7 +341,7 @@ class InvoiceDetailedView(DetailView):
         reservation = invoice.reservation
 
         if self.request.user.country == 'Poland':
-            return ["invoice/inv_detail_pl.html"]
+            return ["invoice/inv_detail.html"]
         else:
             return ["invoice/inv_detail1.html"]
     

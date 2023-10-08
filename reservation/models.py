@@ -89,7 +89,7 @@ class Reservation(models.Model):
     )
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="reservation"
+        CustomUser, on_delete=models.CASCADE, related_name="reservation", null=True
     )
     platform = models.ForeignKey(
         Platform, on_delete=models.CASCADE, related_name="reservation", blank=True
@@ -103,6 +103,10 @@ class Reservation(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+        # if not self.user:  
+        #     self.user = CustomUser.objects.get(pk=self.request.user.pk)
+        #     self.save() 
 
         invoice_id = self.id
         invoice = Invoice(

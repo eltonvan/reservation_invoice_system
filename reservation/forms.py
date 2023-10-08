@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from home import models
+from home.models import CustomUser
 from .models import Reservation, User, Platform, Apartment, TaxRate
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
@@ -53,32 +54,21 @@ class TaxRateForm(forms.ModelForm):
         }
 
 
+
+
 class ReservationForm(forms.ModelForm):
     
-    start_date = forms.DateField(widget=DateInput(attrs={"class": "form-control my-5"}))
-    end_date = forms.DateField(widget=DateInput(attrs={"class": "form-control my-5"}))
+    start_date = forms.DateField(widget=DateInput(attrs={"class": "form-control"}))
+    end_date = forms.DateField(widget=DateInput(attrs={"class": "form-control"}))
     nationality = CountryField().formfield(
-        initial="", widget=CountrySelectWidget(attrs={"class": "form-control mb-5"})
+        initial="", widget=CountrySelectWidget(attrs={"class": "form-control"})
+    )
+    user = forms.ModelChoiceField(
+        queryset=CustomUser.objects.all(),
+        widget=forms.HiddenInput(),
+        required=False  
     )
 
-    def __init__(self, *args, **kwargs):
-        
-        user = kwargs.pop("user", None)
-        super(ReservationForm, self).__init__(*args, **kwargs)
-
-        default_country = 'DE'  
-
-        if not self.instance.nationality:
-            self.initial['nationality'] = default_country
-        if user and not self.instance.user:
-            self.fields["user"].initial = user
-            self.fields['user'].widget = forms.HiddenInput()
-           
-        # if user:
-        #     user_apartments = Apartment.objects.filter(user=user)
-        #     self.fields["apartment"].queryset = user_apartments
-        
-        
 
     class Meta:
         model = Reservation
@@ -99,23 +89,40 @@ class ReservationForm(forms.ModelForm):
             "email",
             "nationality",
             "comment",
+            "user"
         ]
         widgets = {
-            "name": forms.TextInput(attrs={"class": "form-control mb-5"}),
-            "lname": forms.TextInput(attrs={"class": "form-control mb-5"}),
-            "t_sum": forms.NumberInput(attrs={"class": "form-control mb-5"}),
-            "company": forms.TextInput(attrs={"class": "form-control mb-5"}),
-            "address": forms.TextInput(attrs={"class": "form-control mb-5"}),
-            "email": forms.EmailInput(attrs={"class": "form-control mb-5"}),
-            "number_of_guests": forms.NumberInput(attrs={"class": "form-control mb-5"}),
-            "purpose": forms.Select(attrs={"class": "form-control mb-5"}),
-            "commission": forms.NumberInput(attrs={"class": "form-control mb-5"}),
-            "rech_num": forms.TextInput(attrs={"class": "form-control mb-5"}),
-            "link": forms.URLInput(attrs={"class": "form-control mb-5"}),
-            "user": forms.Select(attrs={"class": "form-control mb-5"}),
-            "apartment": forms.Select(attrs={"class": "form-control mb-5"}),
-            "platform": forms.Select(attrs={"class": "form-control mb-5"}),
-            "comment": forms.Textarea(attrs={"class": "form-control mb-5"}),
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "lname": forms.TextInput(attrs={"class": "form-control"}),
+            "t_sum": forms.NumberInput(attrs={"class": "form-control"}),
+            "company": forms.TextInput(attrs={"class": "form-control"}),
+            "address": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "number_of_guests": forms.NumberInput(attrs={"class": "form-control"}),
+            "purpose": forms.Select(attrs={"class": "form-control"}),
+            "commission": forms.NumberInput(attrs={"class": "form-control"}),
+            "rech_num": forms.TextInput(attrs={"class": "form-control"}),
+            "link": forms.URLInput(attrs={"class": "form-control"}),
+            "apartment": forms.Select(attrs={"class": "form-control"}),
+            "platform": forms.Select(attrs={"class": "form-control"}),
+            "comment": forms.Textarea(attrs={"class": "form-control"}),
         }
 
+    def __init__(self, user=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print("in form: ", user)
+        if user:
 
+            user_apartments = Apartment.objects.filter(user=user)
+            self.fields["apartment"].queryset = user_apartments
+
+            user_platforms = Platform.objects.filter(user=user)
+            self.fields["platform"].queryset = user_platforms
+        
+        default_country = 'DE'
+        if not self.instance.nationality:
+            self.initial['nationality'] = default_country
+  
+
+
+        

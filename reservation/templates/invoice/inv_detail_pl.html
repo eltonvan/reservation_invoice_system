@@ -5,10 +5,13 @@
     <table class="table">
         <tr align="left">
             <td>
-                <!-- TODO! take data from user settings -->
-                <h1>apartmenti Szklarska Poreba</h1>
-                <p>fordonska 123 Bydgoszcz </p>
-                <p>tax nummer 12345</p>
+                <h1>{{ invoices.reservation.user.company }}</h1>
+                <p>
+                    {{ invoices.reservation.user.street }}
+                    {{ invoices.reservation.user.house_number }}<br>
+                    {{ invoices.reservation.user.zip_code }} {{ invoices.reservation.user.city }}
+                </p>
+                <p>Numer podatkowy: {{ invoices.reservation.user.tax_number }}</p>
             </td>
             <td>
                 <td>
@@ -22,8 +25,8 @@
         <thead>
         <tr>
             <th>
-                <h4>to: {{ invoices.reservation.name }} {{ invoices.reservation.lname }}</h4>
-                <p>address: {{ invoices.reservation.address }}</p>
+                <h4>Do: {{ invoices.reservation.name }} {{ invoices.reservation.lname }}</h4>
+                <p>Adres: {{ invoices.reservation.address }}</p>
             </th>
             <td></td>
             <th></th>
@@ -31,11 +34,11 @@
             <th></th>
         </tr>
             <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Number of Nights</th>
-                <th>Number of Guests</th>
-                <th>Invoice Netto</th>
+                <th>Od</th>
+                <th>Do</th>
+                <th>Liczba nocy</th>
+                <th>Liczba gości</th>
+                <th>Faktura Netto</th>
             </tr>
         </thead>
         <tbody>
@@ -58,27 +61,29 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>Total:</td>
+                <td>Razem:</td>
                 <td>{{ invoices.reservation.t_sum }}</td>
             </tr>
         </tbody>
     </table>
 <div align = "left">
 
-Prosze pay immidiatly! <br>
-bank account number 44556677 <br>
+Proszę zapłacić natychmiast! <br>
+Numer konta bankowego: 44556677 <br>
 
 
 </div>
-<a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">Back</a>
+<a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">Powrót</a>
+<a href="{% url 'pdf' pk=invoices.id %}" class="btn btn-secondary my-5">Pobierz fakturę PDF</a>
+
 </div> 
 
 <div class="text-center">
     {% if has_previous %}
-        <a href="?page={{ previous_page_number }}" class="btn btn-secondary mx-2">Previous</a>
+        <a href="?page={{ previous_page_number }}" class="btn btn-secondary mx-2">Poprzedni</a>
     {% endif %}
     {% if has_next %}
-        <a href="?page={{ next_page_number }}" class="btn btn-secondary mx-2">Next</a>
+        <a href="?page={{ next_page_number }}" class="btn btn-secondary mx-2">Następny</a>
     {% endif %}
 </div>
 

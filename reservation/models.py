@@ -69,33 +69,33 @@ class Reservation(models.Model):
         ("no-show", "no-show"),
     ]
     id = models.AutoField(primary_key=True)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
     name = models.CharField(max_length=255)
     lname = models.CharField(max_length=255, blank=True)
     company = models.CharField(max_length=255, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    number_of_guests = models.IntegerField(blank=True, null=True)
+    number_of_guests = models.IntegerField(blank=True)
     nationality = models.CharField(max_length=255, blank=True, null=True)
-    t_sum = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    t_sum = models.DecimalField(max_digits=10, decimal_places=2)
     commission = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=True, null=True
+        max_digits=10, decimal_places=2
     )
-    rech_num = models.CharField(max_length=255, blank=True, null=True)
+    rech_num = models.CharField(max_length=255, blank=True)
     link = models.URLField(blank=True, null=True)
     purpose = models.CharField(
-        max_length=255, choices=PURPOSE_CHOICES, blank=True, null=True
+        max_length=255, choices=PURPOSE_CHOICES, blank=True
     )
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="reservation", null=True
+        CustomUser, on_delete=models.CASCADE, related_name="reservation"
     )
     platform = models.ForeignKey(
-        Platform, on_delete=models.CASCADE, related_name="reservation", blank=True
+        Platform, on_delete=models.CASCADE, related_name="reservation"
     )
     apartment = models.ForeignKey(
-        Apartment, on_delete=models.CASCADE, related_name="reservation", blank=True
+        Apartment, on_delete=models.CASCADE, related_name="reservation"
     )
 
     def __str__(self):

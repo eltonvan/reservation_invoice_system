@@ -20,7 +20,7 @@ urlpatterns = [
     path('apartment/new', views.AptCreateView.as_view(), name = 'apartment.new'),
     path('invoice/<int:pk>/', views.InvoiceDetailView.as_view(), name='invoice.detail'),
     path('invoice1/<int:pk>/', views.InvoiceDetailedView.as_view(), name='invoice1.detail'),
-
+    path('pdf/<int:pk>/', views.GeneratePdf.as_view(), name='pdf'),
     path('invoice', views.InvoiceListView.as_view(), name='invoice.list'),
     path('taxrate', views.TaxRateListView.as_view(), name='taxrate.list'),
     path('taxrate/<int:pk>', views.TaxRateDetailView.as_view(), name='taxrate.detail'),

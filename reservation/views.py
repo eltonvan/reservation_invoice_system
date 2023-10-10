@@ -1,6 +1,6 @@
 
-from django.http import HttpResponseRedirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.http import HttpResponseRedirect , Http404
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View 
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm
@@ -8,6 +8,11 @@ from .models import Reservation, Platform, Apartment, TaxRate, Invoice
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.db.models import F
+from .utils import render_to_pdf
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse 
+
+
 
 RESERVATION_URL = "/mini/reservation"
 LOGIN_URL = "/login"
@@ -185,7 +190,7 @@ class AptListView(LoginRequiredMixin, ListView):
 class AptDetailView(LoginRequiredMixin, DetailView):
     model = Apartment
     template_name = "apartment/apt_detail.html"
-    context_object_name = "apt"  # name used in template
+    context_object_name = "apt" 
     login_url = LOGIN_URL
 
 
@@ -265,13 +270,7 @@ class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
 
 
 
-    # model = Reservation
-    # template_name = "invoice/inv_list.html"
-    # context_object_name = "reservation"  # name used in template
-    # login_url = LOGIN_URL
 
-    # def get_queryset(self):
-    #     return self.request.user.reservation.all()
 
 
 class InvoiceListView(LoginRequiredMixin, ListView):
@@ -286,28 +285,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
         print(invoices)
         return invoices
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     invoices = context['invoices']
 
-    #     paginator = Paginator(invoices, self.paginate_by)
-    #     page_number = self.request.GET.get('page')
-    #     page_obj = paginator.get_page(page_number)
-
-    #     context['invoices'] = page_obj
-
-    #     # Add previous and next buttons to the context
-    #     current_page_number = page_obj.number
-    #     total_pages = paginator.num_pages
-    #     context['has_previous'] = current_page_number > 1
-    #     context['previous_page_number'] = current_page_number - 1 if current_page_number > 1 else None
-    #     context['has_next'] = current_page_number < total_pages
-    #     context['next_page_number'] = current_page_number + 1 if current_page_number < total_pages else None
-
-    #     return context
-
-# invoice as a list, takes data from reservation and calculates the fields on the fly. no invoice number
-# wrong approach, invoice should be a separate model, see InvoiceDetailedView
 class InvoiceDetailView(DetailView):
     model = Reservation
     template_name = "invoice/inv_detail.html"
@@ -331,17 +309,30 @@ class InvoiceDetailView(DetailView):
 
         return context
 #invoice as a table
+
+def get_invoice_context(instance):
+    context = {}
+    context['invoices'] = instance
+    context['reservation'] = instance.reservation
+    return context
+
 class InvoiceDetailedView(DetailView):
     model = Invoice
     template_name = "invoice/inv_detail1.html"
     context_object_name = "invoices"
 
+
+
     def get_template_names(self):
         invoice = self.get_object()
-        reservation = invoice.reservation
+        res_user_id = invoice.reservation.user_id
+        user_id = self.request.user.id
+        if res_user_id != user_id:
+            return ["invoice/404.html"]
+            
 
         if self.request.user.country == 'Poland':
-            return ["invoice/inv_detail.html"]
+            return ["invoice/inv_detail_pl.html"]
         else:
             return ["invoice/inv_detail1.html"]
     
@@ -350,13 +341,40 @@ class InvoiceDetailedView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        invoice = self.object
-        reservation = invoice.reservation
+        invoice = self.get_object()
+        res_user_id = invoice.reservation.user_id
+        user_id = self.request.user.id
+        if res_user_id == user_id:
 
-        context['invoices'] = invoice
-        context['reservation'] = reservation
+            invoice = self.object
+            reservation = invoice.reservation
+            context['invoices'] = invoice
+            context['reservation'] = reservation
+        
+            return context
+        #raise Http404("not found")
+    
+class GeneratePdf(View):
+    def get(self, request, pk, *args, **kwargs):
+        instance = get_object_or_404(Invoice, pk=pk)
+        if request.user.country == 'Poland':
+            print("in poland")
+            template_name = "invoice/inv_detail_pl_pdf.html"
+        else:
+            print("in germany")
+            template_name = "invoice/inv_detailed1_pdf.html"
 
-        return context
+        context = get_invoice_context(instance)
+        pdf = render_to_pdf(template_name, context)
+        if pdf:
+            response=HttpResponse(pdf,content_type='application/pdf')
+            filename = "PDF_%s.pdf" %("Invoice")
+            content = "inline; filename= %s" %(filename)
+            response['Content-Disposition']=content
+            return response
+        return HttpResponse("Page Not Found")
+    
+    
 
 
 

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+   
+    .invoice {
+        margin: 20px;
+        font-family: Arial, sans-serif;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+    .note {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="invoice">
+    <div class="header">
+
+    <table>
+        <tr>
+            <td colspan="5">
+                <h1>{{ invoices.reservation.user.company }}</h1>
+                <p>
+                    {{ invoices.reservation.user.street }}
+                    {{ invoices.reservation.user.house_number }}<br>
+                    {{ invoices.reservation.user.zip_code }} {{ invoices.reservation.user.city }}
+                </p>
+                <p>Tax Number: {{ invoices.reservation.user.tax_number }}</p>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="5">To: {{ invoices.reservation.name }} {{ invoices.reservation.lname }}</th>
+        </tr>
+        <tr>
+            <th>Von</th>
+            <th>Bis</th>
+            <th>Nächte</th>
+            <th>Gäste</th>
+            <th>Rechnung Netto</th>
+        </tr>
+        <tr>
+            <td>{{ invoices.reservation.start_date }}</td>
+            <td>{{ invoices.reservation.end_date }}</td>
+            <td>{{ invoices.invoice_number_of_nights }}</td>
+            <td>{{ invoices.reservation.number_of_guests }}</td>
+            <td>{{ invoices.invoice_netto|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+            <td>Bettensteuer: {{ invoices.invoice_citytax|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+            <td>MwSt: {{ invoices.invoice_vat }}</td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+            <td>Gesamt: {{ invoices.reservation.t_sum }}</td>
+        </tr>
+    </table>
+
+    <div class="note">
+        Bitte uberweissen Sie die Summe Innerhalb von einer Woche!<br>
+        Iban: {{ invoices.reservation.user.bank_account }}
+    </div>
+</div>
+
+<div class="text-center">
+</div>
+
+{% endblock %}

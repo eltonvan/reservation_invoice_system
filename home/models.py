@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
     city = models.CharField(max_length=150, blank=True)
     zip_code = models.CharField(max_length=20, blank=True)
     birthday = models.DateField(null=True, blank=True)
+    company = models.CharField(max_length=150, blank=True)
     email = models.EmailField(unique=True,blank=True)
     country = models.CharField(max_length=150)
     phone_number = models.CharField(max_length=20, blank=True)

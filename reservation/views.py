@@ -1,17 +1,15 @@
 
-from django.http import HttpResponseRedirect , Http404
+from django.http import HttpResponseRedirect , Http404, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, View 
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm
 from .models import Reservation, Platform, Apartment, TaxRate, Invoice
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , get_object_or_404
 from django.db.models import F
-from .utils import render_to_pdf
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse 
-
+from .utils import render_to_pdf, get_invoice_context
+from .mixins import CustomLoginRequiredMixin
 
 
 RESERVATION_URL = "/mini/reservation"
@@ -24,14 +22,14 @@ TAX_RATE_URL = "/mini/taxrate"
 
 
 # view of reservation pages
-class ResDeleteView(LoginRequiredMixin, DeleteView):
+class ResDeleteView(CustomLoginRequiredMixin, DeleteView):
     model = Reservation
     success_url = RESERVATION_URL
     template_name = "booking/res_delete.html"
     login_url = LOGIN_URL
 
 
-class ResUpdateView(LoginRequiredMixin, UpdateView):
+class ResUpdateView(CustomLoginRequiredMixin, UpdateView):
     model = Reservation
     success_url = RESERVATION_URL
     form_class = ReservationForm
@@ -120,7 +118,7 @@ class ResListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(name__icontains=name)
         
         return queryset
-class ResDetailView(DetailView):
+class ResDetailView(CustomLoginRequiredMixin, DetailView):
     model = Reservation
     template_name = "booking/res_detail.html"
     context_object_name = "res"
@@ -139,11 +137,11 @@ class PltListView(LoginRequiredMixin, ListView):
         return self.request.user.platform.all()
 
 
-class PltDetailView(LoginRequiredMixin, DetailView):
+class PltDetailView(CustomLoginRequiredMixin, DetailView):
     model = Platform
     template_name = "platform/plt_detail.html"
     context_object_name = "plt"
-    login_url = "/login"
+    #login_url = "/login"
 
 
 class PltCreateView(LoginRequiredMixin, CreateView):
@@ -160,7 +158,7 @@ class PltCreateView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class PltUpdateView(LoginRequiredMixin, UpdateView):
+class PltUpdateView(CustomLoginRequiredMixin, UpdateView):
     model = Platform
     template_name = "platform/plt_form.html"
     success_url = PLATFORM_URL
@@ -168,7 +166,7 @@ class PltUpdateView(LoginRequiredMixin, UpdateView):
     login_url = LOGIN_URL
 
 
-class PltDeleteView(LoginRequiredMixin, DeleteView):
+class PltDeleteView(CustomLoginRequiredMixin, DeleteView):
     model = Platform
     success_url = PLATFORM_URL
     template_name = "platform/plt_delete.html"
@@ -187,11 +185,11 @@ class AptListView(LoginRequiredMixin, ListView):
         return self.request.user.apartment.all()
 
 
-class AptDetailView(LoginRequiredMixin, DetailView):
+class AptDetailView(CustomLoginRequiredMixin, DetailView):
     model = Apartment
     template_name = "apartment/apt_detail.html"
     context_object_name = "apt" 
-    login_url = LOGIN_URL
+    #login_url = LOGIN_URL
 
 
 class AptCreateView(LoginRequiredMixin, CreateView):
@@ -208,7 +206,7 @@ class AptCreateView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class AptUpdateView(LoginRequiredMixin, UpdateView):
+class AptUpdateView(CustomLoginRequiredMixin, UpdateView):
     model = Apartment
     template_name = "apartment/apt_form.html"
     success_url = APARTMENT_URL
@@ -216,7 +214,7 @@ class AptUpdateView(LoginRequiredMixin, UpdateView):
     login_url = LOGIN_URL
 
 
-class AptDeleteView(LoginRequiredMixin, DeleteView):
+class AptDeleteView(CustomLoginRequiredMixin, DeleteView):
     model = Apartment
     success_url = APARTMENT_URL
     template_name = "apartment/apt_delete.html"
@@ -310,11 +308,11 @@ class InvoiceDetailView(DetailView):
         return context
 #invoice as a table
 
-def get_invoice_context(instance):
-    context = {}
-    context['invoices'] = instance
-    context['reservation'] = instance.reservation
-    return context
+# def get_invoice_context(instance):
+#     context = {}
+#     context['invoices'] = instance
+#     context['reservation'] = instance.reservation
+#     return context
 
 class InvoiceDetailedView(DetailView):
     model = Invoice
@@ -352,7 +350,6 @@ class InvoiceDetailedView(DetailView):
             context['reservation'] = reservation
         
             return context
-        #raise Http404("not found")
     
 class GeneratePdf(View):
     def get(self, request, pk, *args, **kwargs):

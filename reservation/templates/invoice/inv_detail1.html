@@ -77,7 +77,7 @@ Bank Account Number: {{ invoices.reservation.user.bank_account }} <br>
 
 </div>
 <a href="{% url 'reservation.list' %}" class="btn btn-secondary my-5">Back</a>
-<a href="{% url 'pdf' pk=invoices.id %}" class="btn btn-secondary my-5">Download PDF Invoice</a>
+<a href="{% url 'pdf' pk=invoices.id %}" class="btn btn-secondary my-5" target="_blank">Download PDF Invoice</a>
 
 </div> 
 

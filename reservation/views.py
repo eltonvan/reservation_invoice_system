@@ -3,13 +3,14 @@ from django.http import HttpResponseRedirect , Http404, HttpResponse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, View 
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm
+from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm, ReportForm
 from .models import Reservation, Platform, Apartment, TaxRate, Invoice
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect , get_object_or_404
 from django.db.models import F
 from .utils import render_to_pdf, get_invoice_context
-from .mixins import CustomLoginRequiredMixin
+from .mixins import CustomLoginRequiredMixin, CustomAuthorizationMixin
+from decimal import Decimal
 
 
 RESERVATION_URL = "/mini/reservation"
@@ -371,8 +372,93 @@ class GeneratePdf(View):
             return response
         return HttpResponse("Page Not Found")
     
+
     
 
+
+class CityTaxReportView(CustomAuthorizationMixin, View):
+
+
+    template_name = 'reports/city_tax_report.html'
+
+    def get(self, request):
+        form = ReportForm()
+        context = {'form': form}
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date']
+
+            
+            purpose_totals = {} 
+            grand_total = {
+                'total_nights': 0,
+                'total_netto': Decimal('0.00'),
+                'total_tax': Decimal('0.00'),
+                'total_vat': Decimal('0.00'),
+                'total_total': Decimal('0.00'),
+            }
+            
+
+            for purpose, _ in Reservation.PURPOSE_CHOICES:
+                reservations = Reservation.objects.filter(
+                    start_date__gte=start_date,
+                    end_date__lte=end_date,
+                    user=request.user,
+                    purpose=purpose,
+                )
+                
+
+                total_nights = sum((res.number_of_nights() for res in reservations))
+                total_netto = sum((res.calculate_netto() for res in reservations))
+                total_tax = sum((res.calculate_citytax() for res in reservations))
+                total_vat = sum((res.calculate_vat() for res in reservations))
+                total_total = total_netto + total_tax + total_vat
+
+                purpose_totals[purpose] = {
+                    'total_nights': total_nights,
+                    'total_netto': total_netto,
+                    'total_tax': total_tax,
+                    'total_vat': total_vat,
+                    'total_total': total_total,
+                }
+                
+
+                
+                grand_total['total_nights'] += total_nights
+                grand_total['total_netto'] += total_netto
+                grand_total['total_tax'] += total_tax
+                grand_total['total_vat'] += total_vat
+                grand_total['total_total'] += total_total
+                
+
+
+
+
+            vat_rate = request.user.taxrates.latest('start_date').vat_rate
+            city_tax_rate = request.user.taxrates.latest('start_date').citytax_rate
+
+
+            print("vat rate: ", vat_rate)
+            
+
+            context = {
+                'form': form,
+                'vat_rate': vat_rate,
+                'city_tax_rate': city_tax_rate,
+                'purpose_totals': purpose_totals,
+                'grand_total': grand_total,
+            }
+            
+
+            return render(request, self.template_name, context)
+        else:
+            # Handle form validation errors 
+            context = {'form': form}
+            return render(request, self.template_name, context)
 
 
  

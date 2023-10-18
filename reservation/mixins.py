@@ -9,3 +9,12 @@ class CustomLoginRequiredMixin(LoginRequiredMixin):
             template_name = 'invoice/404.html'
             return render(request, template_name, status=404)
         return super().dispatch(request, *args, **kwargs)
+    
+
+
+
+class CustomAuthorizationMixin(LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)

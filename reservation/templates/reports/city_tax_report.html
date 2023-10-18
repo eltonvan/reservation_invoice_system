@@ -1,0 +1,55 @@
+
+
+{% extends "base.html" %}
+{% load humanize %}
+{% load percentage_tags%}
+
+{% block content %}
+<h1>City Tax Report</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="start_date">Start Date:</label>
+    <input type="date" name="start_date">
+    <label for "end_date">End Date:</label>
+    <input type="date" name="end_date">
+    <input type="submit" value="Generate Report">
+</form>
+
+<h2>Report</h2>
+
+<table class="report-table">
+    <thead>
+        <tr>
+            <th>Purpose</th>
+            <th>number of Nights</th>
+            <th>Netto</th>
+            {% comment %} <th>city Tax {{ city_tax_rate|percent }}</th>{% endcomment %}
+            <th>VAT {{ vat_rate | percentage:"1" }}</th> 
+            <th>city Tax{{ city_tax_rate | percentage:"1" }}</th>
+            {% comment %} <th>VAT </th> {% endcomment %}
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for purpose, totals in purpose_totals.items %}
+        <tr>
+            <td>{{ purpose }}</td>
+            <td>{{ totals.total_nights|intcomma }}</td>
+            <td>€{{ totals.total_netto|floatformat:2|intcomma }}</td>
+            <td>€{{ totals.total_tax|floatformat:2|intcomma }}</td>
+            <td>€{{ totals.total_vat|floatformat:2|intcomma }}</td>
+            <td>€{{ totals.total_total|floatformat:2|intcomma }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td><strong>Total</strong></td>
+            <td><strong>{{ grand_total.total_nights|intcomma }}</strong></td>
+            <td><strong>€{{ grand_total.total_netto|floatformat:2|intcomma }}</strong></td>
+            <td><strong>€{{ grand_total.total_tax|floatformat:2|intcomma }}</strong></td>
+            <td><strong>€{{ grand_total.total_vat|floatformat:2|intcomma }}</strong></td>
+            <td><strong>€{{ grand_total.total_total|floatformat:2|intcomma }}</strong></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

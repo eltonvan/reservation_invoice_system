@@ -19,8 +19,8 @@ class TaxRate(models.Model):
     tax_zone = models.CharField(max_length=255, default="Germany")
 
     def __str__(self):
-        return f"Steuersätze (ab {self.start_date}, {self.tax_zone}, {self.vat_rate}%, {self.citytax_rate}%)"
-
+       # return f"Steuersätze (ab {self.start_date}, {self.tax_zone}, {self.vat_rate}%, {self.citytax_rate}%)"
+        return self.tax_zone
     class Meta:
         ordering = ["-start_date"]
 

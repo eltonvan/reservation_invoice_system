@@ -25,11 +25,7 @@ class CustomUserCreationForm(UserCreationForm):
             "bank_account",
         )
 
-        # def __init__(self, *args, **kwargs):
-        #     super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-        #     self.fields['username'].widget.attrs["class"] = "input-group-text"
-        #     self.fields['password1'].widget.attrs["class"] = "input-group-text"
-        #     self.fields['password2'].widget.attrs["class"] = "input-group-text"
+
         widgets = {
             "name": forms.TextInput(attrs={"class": "input-group-text"}),
             "last_name": forms.TextInput(attrs={"class": "input-group-text"}),

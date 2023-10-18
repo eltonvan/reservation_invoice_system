@@ -1,21 +1,31 @@
 
 {% extends "base.html" %}
 
+
 {% block content %}
-    <h1 class="my-5">platform list:</h1>
+<h1 class="my-5">apartment list:</h1>
 
-        <div class="row row-cols3 g-2"> 
-            {% for plt in platform %}
-            <div class="col"> 
-                <div class="p-3 border">
-                    <a href="{% url 'platform.detail' pk=plt.id %}" class="text-dark text-decoration-non">
-                        <h3>{{plt.name}}</h3>
-                    </a>
-                    {{plt.name |truncatechars:10}}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    
 
-                </div>
-            </div>
-            {% endfor %}
-            <a href="{%url 'platform.new' %}" class="btn btn-primary">add platform</a>
-        </div> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for plt in platform %}
+                <tr>
+                    <td>{{plt.id}}</td>
+                    <td> <a href="{% url 'platform.detail' pk=plt.id %}">
+                        {{plt.name}}
+                    </a></td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{%url 'platform.new' %}" class="btn btn-primary">add platform</a>
+    </div>
 {% endblock %}

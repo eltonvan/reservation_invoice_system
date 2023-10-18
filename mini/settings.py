@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'reservation',
     'home',
     'django_countries',
+    #'django_dbbackup',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

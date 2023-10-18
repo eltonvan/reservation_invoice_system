@@ -29,6 +29,20 @@ body {
             <a href="{% url 'reservation.list' %}" class="btn btn-outline-light me-1">home</a>
             <a href="{% url 'reservation.new' %}" class="btn btn-outline-light me-1">new reservation</a>
             <a href="{% url 'invoice.list' %}" class="btn btn-outline-light me-1">invoices</a>
+            
+            <div class="btn-group">
+                <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    reports
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                   {% if user.country != 'Poland' %}
+                        <a class="dropdown-item" href="{% url "citytaxreport" %}">city tax</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="">sales</a>
+                    
+
+                </div>
+            </div>
             <div class="btn-group">
                 <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Settings
@@ -37,6 +51,7 @@ body {
                     <a class="dropdown-item" href="{% url 'platform.list' %}">Platform</a>
                     <a class="dropdown-item" href="{% url 'apartment.list' %}">Apartment</a>
                     <a class="dropdown-item" href="{% url 'taxrate.list' %}">Tax Rates</a>
+                    <a class="dropdown-item" href="{% url 'update'  %} ">update user</a>
 
                 </div>
             </div>

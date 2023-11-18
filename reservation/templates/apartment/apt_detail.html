@@ -1,14 +1,14 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
+<div class="border rounded p-3 my-5">
+  <h1 class="my-5">{{apt.name}}</h1>
 
-{% block content %}
-<div class = 'border rounded p-3 my-5'>
-
-    
-<h1 class="my-5">{{apt.name}}</h1>
-
-    <p>{{apt.name}}</p>
-    <a href="{% url 'apartment.list' %}" class="btn btn-secondary my-5">back</a>
-    <a href="{% url 'apartment.update' pk=apt.id %}" class="btn btn-secondary">edit</a>
-    <a href="{% url 'apartment.delete' pk=apt.id %}" class="btn btn-danger">delete</a>
-{% endblock %}
-    
+  <p>{{apt.name}}</p>
+  <a href="{% url 'apartment.list' %}" class="btn btn-secondary my-5">back</a>
+  <a href="{% url 'apartment.update' pk=apt.id %}" class="btn btn-secondary"
+    >edit</a
+  >
+  <a href="{% url 'apartment.delete' pk=apt.id %}" class="btn btn-danger"
+    >delete</a
+  >
+  {% endblock %}
+</div>

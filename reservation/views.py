@@ -1,25 +1,40 @@
-
-from django.http import HttpResponseRedirect , Http404, HttpResponse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, View 
+from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, View
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReservationForm, PlatformForm, ApartmentForm, TaxRateForm, ReportForm
 from .models import Reservation, Platform, Apartment, TaxRate, Invoice
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect , get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import F
 from .utils import render_to_pdf, get_invoice_context
 from .mixins import CustomLoginRequiredMixin, CustomAuthorizationMixin
 from decimal import Decimal
+from reservation.ReservationSerializer import (
+    ReservationSerializer,
+    PlatformSerializer,
+    ApartmentSerializer,
+    TaxRateSerializer,
+    InvoiceSerializer,
+)
 
+from .permissions import IsOwnerOrReadOnly
+
+
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    RetrieveUpdateAPIView,
+)
+from rest_framework.permissions import IsAuthenticated
 
 RESERVATION_URL = "/mini/reservation"
 LOGIN_URL = "/login"
 PLATFORM_URL = "/mini/platform"
 APARTMENT_URL = "/mini/apartment"
 TAX_RATE_URL = "/mini/taxrate"
-
-
 
 
 # view of reservation pages
@@ -30,13 +45,12 @@ class ResDeleteView(CustomLoginRequiredMixin, DeleteView):
     login_url = LOGIN_URL
 
 
-class ResUpdateView(CustomLoginRequiredMixin, UpdateView):
+class ResUpdateView(UpdateView):
     model = Reservation
     success_url = RESERVATION_URL
     form_class = ReservationForm
     template_name = "booking/res_form.html"
     login_url = LOGIN_URL
-
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -44,57 +58,45 @@ class ResUpdateView(CustomLoginRequiredMixin, UpdateView):
         return render(request, "booking/res_form.html", {"form": form})
 
     def form_valid(self, form):
-        form.instance.user = self.request.user 
+        form.instance.user = self.request.user
         form.save()
         return HttpResponseRedirect(self.get_success_url())
 
 
-
-
 class ResCreateView(LoginRequiredMixin, CreateView):
-
     model = Reservation
     template_name = "booking/res_form.html"
     success_url = RESERVATION_URL
 
-
     fields = [
-            "start_date",
-            "end_date",
-            "name",
-            "lname",
-            "t_sum",
-            "address",
-            "commission",
-            "rech_num",
-            "purpose",
-            "number_of_guests",
-            "apartment",
-            "platform",
-            "company",
-            "email",
-            "nationality",
-            "comment",
-           
-        ]
+        "start_date",
+        "end_date",
+        "name",
+        "lname",
+        "t_sum",
+        "address",
+        "commission",
+        "rech_num",
+        "purpose",
+        "number_of_guests",
+        "apartment",
+        "platform",
+        "company",
+        "email",
+        "nationality",
+        "comment",
+    ]
 
     def get(self, request, *args, **kwargs):
         form = ReservationForm(user=request.user)
         print("print on view", request.user)
         return render(request, "booking/res_form.html", {"form": form})
-    
-
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-    
-    
-
-
-
 
 
 class ResListView(LoginRequiredMixin, ListView):
@@ -104,21 +106,24 @@ class ResListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
 
     def get_queryset(self):
-        queryset =  self.request.user.reservation.order_by(F('start_date').asc())
+        queryset = self.request.user.reservation.order_by(F("start_date").asc())
 
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
+        start_date = self.request.GET.get("start_date")
+        end_date = self.request.GET.get("end_date")
 
-        name = self.request.GET.get('name')
+        name = self.request.GET.get("name")
 
-        
         if start_date and end_date:
-            queryset = queryset.filter(start_date__gte=start_date, end_date__lte=end_date)
+            queryset = queryset.filter(
+                start_date__gte=start_date, end_date__lte=end_date
+            )
 
         if name:
             queryset = queryset.filter(name__icontains=name)
-        
+
         return queryset
+
+
 class ResDetailView(CustomLoginRequiredMixin, DetailView):
     model = Reservation
     template_name = "booking/res_detail.html"
@@ -142,7 +147,7 @@ class PltDetailView(CustomLoginRequiredMixin, DetailView):
     model = Platform
     template_name = "platform/plt_detail.html"
     context_object_name = "plt"
-    #login_url = "/login"
+    # login_url = "/login"
 
 
 class PltCreateView(LoginRequiredMixin, CreateView):
@@ -189,8 +194,8 @@ class AptListView(LoginRequiredMixin, ListView):
 class AptDetailView(CustomLoginRequiredMixin, DetailView):
     model = Apartment
     template_name = "apartment/apt_detail.html"
-    context_object_name = "apt" 
-    #login_url = LOGIN_URL
+    context_object_name = "apt"
+    # login_url = LOGIN_URL
 
 
 class AptCreateView(LoginRequiredMixin, CreateView):
@@ -221,6 +226,7 @@ class AptDeleteView(CustomLoginRequiredMixin, DeleteView):
     template_name = "apartment/apt_delete.html"
     login_url = LOGIN_URL
 
+
 # taxRate pages
 
 
@@ -231,11 +237,10 @@ class TaxRateListView(LoginRequiredMixin, ListView):
     login_url = LOGIN_URL
 
     def get_queryset(self):
-        #return TaxRate.objects.all()
+        # return TaxRate.objects.all()
         return self.request.user.taxrates.all()
-        
-    
-    
+
+
 class TaxRateDetailView(LoginRequiredMixin, DetailView):
     model = TaxRate
     template_name = "settings/tax_detail.html"
@@ -250,12 +255,12 @@ class TaxRateCreateView(LoginRequiredMixin, CreateView):
     form_class = TaxRateForm
     login_url = LOGIN_URL
 
-    def form_valid(self, form): 
+    def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-    
+
 
 class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
     model = TaxRate
@@ -268,16 +273,12 @@ class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
 # invoice pages
 
 
-
-
-
-
 class InvoiceListView(LoginRequiredMixin, ListView):
     model = Invoice
     template_name = "invoice/inv_list.html"
     context_object_name = "invoices"
     login_url = LOGIN_URL
-   # paginate_by = 1  # Set the number of invoices per page
+    # paginate_by = 1  # Set the number of invoices per page
 
     def get_queryset(self):
         invoices = Invoice.objects.filter(reservation__user=self.request.user)
@@ -301,13 +302,15 @@ class InvoiceDetailView(DetailView):
         netto = reservation.calculate_netto()
 
         # Add the calculated fields to the context
-        context['number_of_nights'] = number_of_nights
-        context['citytax'] = citytax
-        context['vat'] = vat
-        context['netto'] = netto
+        context["number_of_nights"] = number_of_nights
+        context["citytax"] = citytax
+        context["vat"] = vat
+        context["netto"] = netto
 
         return context
-#invoice as a table
+
+
+# invoice as a table
 
 # def get_invoice_context(instance):
 #     context = {}
@@ -315,12 +318,11 @@ class InvoiceDetailView(DetailView):
 #     context['reservation'] = instance.reservation
 #     return context
 
+
 class InvoiceDetailedView(DetailView):
     model = Invoice
     template_name = "invoice/inv_detail1.html"
     context_object_name = "invoices"
-
-
 
     def get_template_names(self):
         invoice = self.get_object()
@@ -328,15 +330,11 @@ class InvoiceDetailedView(DetailView):
         user_id = self.request.user.id
         if res_user_id != user_id:
             return ["invoice/404.html"]
-            
 
-        if self.request.user.country == 'Poland':
+        if self.request.user.country == "Poland":
             return ["invoice/inv_detail_pl.html"]
         else:
             return ["invoice/inv_detail1.html"]
-    
-
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -344,18 +342,18 @@ class InvoiceDetailedView(DetailView):
         res_user_id = invoice.reservation.user_id
         user_id = self.request.user.id
         if res_user_id == user_id:
-
             invoice = self.object
             reservation = invoice.reservation
-            context['invoices'] = invoice
-            context['reservation'] = reservation
-        
+            context["invoices"] = invoice
+            context["reservation"] = reservation
+
             return context
-    
+
+
 class GeneratePdf(View):
     def get(self, request, pk, *args, **kwargs):
         instance = get_object_or_404(Invoice, pk=pk)
-        if request.user.country == 'Poland':
+        if request.user.country == "Poland":
             print("in poland")
             template_name = "invoice/inv_detail_pl_pdf.html"
         else:
@@ -365,43 +363,36 @@ class GeneratePdf(View):
         context = get_invoice_context(instance)
         pdf = render_to_pdf(template_name, context)
         if pdf:
-            response=HttpResponse(pdf,content_type='application/pdf')
-            filename = "PDF_%s.pdf" %("Invoice")
-            content = "inline; filename= %s" %(filename)
-            response['Content-Disposition']=content
+            response = HttpResponse(pdf, content_type="application/pdf")
+            filename = "PDF_%s.pdf" % ("Invoice")
+            content = "inline; filename= %s" % (filename)
+            response["Content-Disposition"] = content
             return response
         return HttpResponse("Page Not Found")
-    
-
-    
 
 
 class CityTaxReportView(CustomAuthorizationMixin, View):
-
-
-    template_name = 'reports/city_tax_report.html'
+    template_name = "reports/city_tax_report.html"
 
     def get(self, request):
         form = ReportForm()
-        context = {'form': form}
+        context = {"form": form}
         return render(request, self.template_name, context)
 
     def post(self, request):
         form = ReportForm(request.POST)
         if form.is_valid():
-            start_date = form.cleaned_data['start_date']
-            end_date = form.cleaned_data['end_date']
+            start_date = form.cleaned_data["start_date"]
+            end_date = form.cleaned_data["end_date"]
 
-            
-            purpose_totals = {} 
+            purpose_totals = {}
             grand_total = {
-                'total_nights': 0,
-                'total_netto': Decimal('0.00'),
-                'total_tax': Decimal('0.00'),
-                'total_vat': Decimal('0.00'),
-                'total_total': Decimal('0.00'),
+                "total_nights": 0,
+                "total_netto": Decimal("0.00"),
+                "total_tax": Decimal("0.00"),
+                "total_vat": Decimal("0.00"),
+                "total_total": Decimal("0.00"),
             }
-            
 
             for purpose, _ in Reservation.PURPOSE_CHOICES:
                 reservations = Reservation.objects.filter(
@@ -410,7 +401,6 @@ class CityTaxReportView(CustomAuthorizationMixin, View):
                     user=request.user,
                     purpose=purpose,
                 )
-                
 
                 total_nights = sum((res.number_of_nights() for res in reservations))
                 total_netto = sum((res.calculate_netto() for res in reservations))
@@ -419,46 +409,94 @@ class CityTaxReportView(CustomAuthorizationMixin, View):
                 total_total = total_netto + total_tax + total_vat
 
                 purpose_totals[purpose] = {
-                    'total_nights': total_nights,
-                    'total_netto': total_netto,
-                    'total_tax': total_tax,
-                    'total_vat': total_vat,
-                    'total_total': total_total,
+                    "total_nights": total_nights,
+                    "total_netto": total_netto,
+                    "total_tax": total_tax,
+                    "total_vat": total_vat,
+                    "total_total": total_total,
                 }
-                
 
-                
-                grand_total['total_nights'] += total_nights
-                grand_total['total_netto'] += total_netto
-                grand_total['total_tax'] += total_tax
-                grand_total['total_vat'] += total_vat
-                grand_total['total_total'] += total_total
-                
+                grand_total["total_nights"] += total_nights
+                grand_total["total_netto"] += total_netto
+                grand_total["total_tax"] += total_tax
+                grand_total["total_vat"] += total_vat
+                grand_total["total_total"] += total_total
 
-
-
-
-            vat_rate = request.user.taxrates.latest('start_date').vat_rate
-            city_tax_rate = request.user.taxrates.latest('start_date').citytax_rate
-
+            vat_rate = request.user.taxrates.latest("start_date").vat_rate
+            city_tax_rate = request.user.taxrates.latest("start_date").citytax_rate
 
             print("vat rate: ", vat_rate)
-            
 
             context = {
-                'form': form,
-                'vat_rate': vat_rate,
-                'city_tax_rate': city_tax_rate,
-                'purpose_totals': purpose_totals,
-                'grand_total': grand_total,
+                "form": form,
+                "vat_rate": vat_rate,
+                "city_tax_rate": city_tax_rate,
+                "purpose_totals": purpose_totals,
+                "grand_total": grand_total,
             }
-            
 
             return render(request, self.template_name, context)
         else:
-            # Handle form validation errors 
-            context = {'form': form}
+            # Handle form validation errors
+            context = {"form": form}
             return render(request, self.template_name, context)
 
 
- 
+# api's
+class ReservationAPIView(ListCreateAPIView):
+    permissions_classes = [IsOwnerOrReadOnly]
+    serializer_class = ReservationSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Reservation.objects.all()
+        return Reservation.objects.filter(user=self.request.user)
+
+
+class ReservationDetailAPIView(RetrieveAPIView):
+    permissions_classes = (IsOwnerOrReadOnly,)
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+
+
+class ApartmentAPIView(ListAPIView):
+    queryset = Apartment.objects.all()
+    serializer_class = ApartmentSerializer
+
+
+class ApartmentDetailAPIView(RetrieveAPIView):
+    queryset = Apartment.objects.all()
+    serializer_class = ApartmentSerializer
+
+
+class PlatformAPIView(ListAPIView):
+    queryset = Platform.objects.all()
+    serializer_class = PlatformSerializer
+
+
+class PlatformDetailAPIView(RetrieveAPIView):
+    queryset = Platform.objects.all()
+    serializer_class = PlatformSerializer
+
+
+class TaxRateAPIView(ListAPIView):
+    queryset = TaxRate.objects.all()
+    serializer_class = TaxRateSerializer
+
+
+class TaxRateDetailAPIView(RetrieveAPIView):
+    queryset = TaxRate.objects.all()
+    serializer_class = TaxRateSerializer
+
+
+class InvoiceAPIView(ListAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
+
+
+class InvoiceDetailAPIView(RetrieveAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer

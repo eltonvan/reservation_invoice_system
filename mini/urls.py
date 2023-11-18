@@ -1,5 +1,5 @@
 """
-URL configuration for smartnotes project.
+URL configuration for mini project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -17,9 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from home import views
+from rest_framework.authtoken.views import obtain_auth_token  # new
+from rest_framework import routers  # new
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('home.urls')),
-    path('mini/',include('reservation.urls'))
+    path("admin/", admin.site.urls),
+    path("", include("home.urls")),
+    path("mini/", include("reservation.urls")),
+    path("api-auth/", include("rest_framework.urls")),  # new
+    path("api/v1/dj-rest-auth/", include("dj_rest_auth.urls")),  # new
+    path(
+        "api/v1/dj-rest-auth/registration/",
+        include("dj_rest_auth.registration.urls"),
+    ),  # new
 ]

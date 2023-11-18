@@ -10,14 +10,12 @@ from django.urls import resolve
 
 
 
-
 class UserCreationTest(TestCase):
     def test_user_creation(self):
-        
         user_data = {
             'name': 'testuser',
             'password': 'testpassword',
-            'email': 'testuser@example55.com',
+            'email': 'testuser@example5s5.com',
             'last_name': 'User',
             'street': 'Test Street',
             'house_number': '1',
@@ -31,17 +29,20 @@ class UserCreationTest(TestCase):
             'bank_account': '1234567890',
         }
 
-
         # Ensure the user doesn't exist 
         self.assertIsNone(CustomUser.objects.filter(username=user_data['name']).first())
 
         # Create a new user
-        response = self.client.post(reverse('signup'), data=user_data, follow=True)
+        response = self.client.post(reverse('signup'), data=user_data, follow=False)
 
         # Check if the user was created
-        print(resolve(response.url).url_name)
-        self.assertEqual(response.status_code, 302)
-        
+        self.assertRedirects(response, reverse('reservation.list'), fetch_redirect_response=False)
+
+        #self.assertEqual(response.status_code, 302)
+
+        # Get the URL name from the response context
+        resolved_url_name = resolve(response.request['PATH_INFO']).url_name
+        self.assertEqual(resolved_url_name, 'reservation.list')
 
         # Check if the user now exists
         created_user = CustomUser.objects.get(username=user_data['name'])
@@ -50,6 +51,7 @@ class UserCreationTest(TestCase):
         # Check if the user can log in 
         login_success = self.client.login(username=user_data['name'], password=user_data['password'])
         self.assertTrue(login_success)
+
 
 
 # user permissions

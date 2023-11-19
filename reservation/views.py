@@ -17,18 +17,18 @@ from reservation.ReservationSerializer import (
     TaxRateSerializer,
     InvoiceSerializer,
 )
-
 from .permissions import IsOwnerOrReadOnly
-
-
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
     RetrieveAPIView,
     RetrieveUpdateAPIView,
+    CreateAPIView,
 )
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions as permission
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+
 
 RESERVATION_URL = "/mini/reservation"
 LOGIN_URL = "/login"
@@ -443,8 +443,8 @@ class CityTaxReportView(CustomAuthorizationMixin, View):
 
 
 # api's
-class ReservationAPIView(ListCreateAPIView):
-    permissions_classes = [IsOwnerOrReadOnly]
+class ReservationAPIView(ListAPIView):
+    permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = ReservationSerializer
 
     def perform_create(self, serializer):
@@ -456,7 +456,7 @@ class ReservationAPIView(ListCreateAPIView):
         return Reservation.objects.filter(user=self.request.user)
 
 
-class ReservationDetailAPIView(RetrieveAPIView):
+class ReservationDetailAPIView(RetrieveUpdateDestroyAPIView):
     permissions_classes = (IsOwnerOrReadOnly,)
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
@@ -465,38 +465,46 @@ class ReservationDetailAPIView(RetrieveAPIView):
 class ApartmentAPIView(ListAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
-class ApartmentDetailAPIView(RetrieveAPIView):
+class ApartmentDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
 class PlatformAPIView(ListAPIView):
     queryset = Platform.objects.all()
     serializer_class = PlatformSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
-class PlatformDetailAPIView(RetrieveAPIView):
+class PlatformDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Platform.objects.all()
     serializer_class = PlatformSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
 class TaxRateAPIView(ListAPIView):
     queryset = TaxRate.objects.all()
     serializer_class = TaxRateSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
-class TaxRateDetailAPIView(RetrieveAPIView):
+class TaxRateDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = TaxRate.objects.all()
     serializer_class = TaxRateSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
 class InvoiceAPIView(ListAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
-class InvoiceDetailAPIView(RetrieveAPIView):
+class InvoiceDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
+    permission_classes = (IsOwnerOrReadOnly,)

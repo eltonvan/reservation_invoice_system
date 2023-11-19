@@ -11,12 +11,15 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from .models import CustomUser
 from .forms import CustomUserCreationForm
+from reservation.permissions import IsOwnerOrReadOnly
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
     RetrieveAPIView,
     RetrieveUpdateAPIView,
+    CreateAPIView,
+
 )
 from rest_framework import permissions as permission
 from rest_framework.permissions import IsAdminUser
@@ -29,12 +32,11 @@ from django.urls import reverse_lazy
 from .serializers import CustomUserSerializer
 
 
-from reservation.permissions import IsOwnerOrReadOnly
 
 
 class SignupView(CreateView):
     form_class = CustomUserCreationForm
-    template_name = "register.html"
+    template_name = "home/register.html"
     success_url = reverse_lazy("reservation.list")
     model = CustomUser
     success_message = "Registration successful. you can now log in."
@@ -102,3 +104,12 @@ class CustomUserApiDetail(RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsOwnerOrReadOnly,)
+
+
+class CustomUserCreateAPIView(CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = (IsOwnerOrReadOnly,)        
+
+    def perform_create(self, serializer):
+        serializer.save()

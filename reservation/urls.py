@@ -95,5 +95,6 @@ urlpatterns = [
         views.TaxRateDetailAPIView.as_view(),
         name="api.taxrate.detail",
     ),
+    
 
 ]

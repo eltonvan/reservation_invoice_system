@@ -30,4 +30,5 @@ urlpatterns = [
         "api/v1/dj-rest-auth/registration/",
         include("dj_rest_auth.registration.urls"),
     ),  # new
+    
 ]

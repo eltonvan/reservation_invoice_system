@@ -4,13 +4,14 @@ from django.forms import CharField
 from home.models import CustomUser
 
 
+
 class TaxRate(models.Model):
     user = models.ForeignKey(
-    CustomUser,
-    on_delete=models.CASCADE,
-    related_name="taxrates",
-    null=True,
-    blank=True,
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="taxrates",
+        null=True,
+        blank=True,
     )
     start_date = models.DateField()
     vat_rate = models.DecimalField(max_digits=5, decimal_places=2, default=7)
@@ -19,8 +20,9 @@ class TaxRate(models.Model):
     tax_zone = models.CharField(max_length=255, default="Germany")
 
     def __str__(self):
-       # return f"Steuersätze (ab {self.start_date}, {self.tax_zone}, {self.vat_rate}%, {self.citytax_rate}%)"
+        # return f"Steuersätze (ab {self.start_date}, {self.tax_zone}, {self.vat_rate}%, {self.citytax_rate}%)"
         return self.tax_zone
+
     class Meta:
         ordering = ["-start_date"]
 
@@ -79,14 +81,10 @@ class Reservation(models.Model):
     number_of_guests = models.IntegerField(blank=True)
     nationality = models.CharField(max_length=255, blank=True, null=True)
     t_sum = models.DecimalField(max_digits=10, decimal_places=2)
-    commission = models.DecimalField(
-        max_digits=10, decimal_places=2
-    )
+    commission = models.DecimalField(max_digits=10, decimal_places=2)
     rech_num = models.CharField(max_length=255, blank=True)
     link = models.URLField(blank=True, null=True)
-    purpose = models.CharField(
-        max_length=255, choices=PURPOSE_CHOICES, blank=True
-    )
+    purpose = models.CharField(max_length=255, choices=PURPOSE_CHOICES, blank=True)
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="reservation"
@@ -101,12 +99,14 @@ class Reservation(models.Model):
     def __str__(self):
         return self.name
 
+
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        # if not self.user:  
+        # if not self.user:
         #     self.user = CustomUser.objects.get(pk=self.request.user.pk)
-        #     self.save() 
+        #     self.save()
 
         invoice_id = self.id
         invoice = Invoice(
@@ -159,11 +159,10 @@ class Reservation(models.Model):
             return self.t_sum - citytax - vat
         else:
             return self.t_sum - vat
-        
+
     def number_of_nights(self):
         """returns the number of nights"""
         return (self.end_date - self.start_date).days
-    
 
     def get_platform_address(self):
         return self.platform.address
@@ -185,4 +184,3 @@ class Invoice(models.Model):
         max_digits=10, decimal_places=2, blank=True, null=True
     )
     invoice_number_of_nights = models.IntegerField(blank=True, null=True)
-

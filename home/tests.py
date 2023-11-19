@@ -1,86 +1,214 @@
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, resolve
 from datetime import date
 from .models import CustomUser
 from .forms import CustomUserCreationForm
-from decimal import Decimal
 from django.contrib.auth.models import Permission
 from django.contrib.auth import get_user_model
-from django.urls import resolve
+from rest_framework.test import APITestCase
+from rest_framework import status
 
 
+class UserTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        testuser1 = CustomUser.objects.create_user(
+            is_superuser=True,
+            username="testuser1",
+            password="abc123",
+            email="user1@testsite.com",
+            first_name="Test",
+            last_name="User",
+            phone_number="1234567890",
+            city="Test City",
+            zip_code="12345",
+            country="Test Country",
+            is_staff=True,
+        )
+        testuser1.save()
 
-class UserCreationTest(TestCase):
-    def test_user_creation(self):
-        user_data = {
-            'name': 'testuser',
-            'password': 'testpassword',
-            'email': 'testuser@example5s5.com',
-            'last_name': 'User',
-            'street': 'Test Street',
-            'house_number': '1',
-            'city': 'Test City',
-            'zip_code': '12345',
-            'birthday': '1990-01-01',
-            'company': 'Test Company',
-            'country': 'Test Country',
-            'phone_number': '0123456789',
-            'tax_number': '1234567890',
-            'bank_account': '1234567890',
+        testuser2 = CustomUser.objects.create_user(
+            username="testuser2",
+            password="abc123",
+            email="user2@testsite.com",
+            first_name="Test",
+            last_name="User",
+            phone_number="1234567890",
+            city="Test City",
+            zip_code="12345",
+            country="Test Country",
+            is_staff=True,
+        )
+        testuser2.save()
+
+        def test_users_content(self):
+            user = CustomUser.objects.get(id=1)
+            expected_object_name = f"{user.username}"
+            self.assertEquals(expected_object_name, "testuser1")
+            self.assertEquals(user.email, "user1@testsite.com")
+            self.assertEquals(user.first_name, "Test")
+            self.assertEquals(user.last_name, "User")
+            self.assertEquals(user.phone_number, "1234567890")
+            self.assertEquals(user.city, "Test City")
+            self.assertEquals(user.zip_code, "12345")
+            self.assertEquals(user.country, "Test Country")
+            self.assertEquals(user.is_staff, True)
+
+        def test_users_list_view(self):
+            self.client.login(username="testuser1", password="abc123")
+            response = self.client.get(reverse("user_list"))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, "testuser1")
+            self.assertTemplateUsed(response, "home/user_list.html")
+
+
+class CustomUserCreationFormTest(TestCase):
+    def test_custom_user_creation_form_valid_data(self):
+        form = CustomUserCreationForm(
+            data={
+                "username": "testuser1",
+                "password1": "abc123Testing",
+                "password2": "abc123Testing",
+                "name": "Test",
+                "house_number": "123",
+                "tax_number": "1234567890",
+                "bank_account": "1234567890",
+                "birthday": "1990-01-01",
+                "email": "tester@testsite.com",
+                "country": "Test Country",
+                "zip_code": "12345",
+                "city": "Test City",
+                "phone_number": "1234567890",
+                "last_name": "User",
+                "name": "Test",
+            }
+        )
+        self.assertTrue(form.is_valid(), f"Form errors: {form.errors}")
+        user = form.save()
+        self.assertEqual(user.username, "testuser1")
+        self.assertEqual(user.email, "tester@testsite.com")
+        self.assertEqual(user.country, "Test Country")
+        self.assertEqual(user.zip_code, "12345")
+        self.assertEqual(user.city, "Test City")
+        self.assertEqual(user.phone_number, "1234567890")
+        self.assertEqual(user.last_name, "User")
+        self.assertEqual(user.name, "Test")
+
+
+class CustomUserUpdateFormTest(TestCase):
+    pass
+
+
+class CustomUserApiTest(APITestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = CustomUser.objects.create_user(
+            is_superuser=False,
+            username="testuser1",
+            password="abc123Testing",
+            email="user1@testsite.com",
+            first_name="Test",
+            last_name="User",
+            phone_number="1234567890",
+            city="Test City",
+            zip_code="12345",
+            country="Test Country",
+            is_staff=True,
+        )
+        cls.user2 = CustomUser.objects.create_user(
+            username="testuser2",
+            password="abc123Testing",
+            email="user2@testsite.com",
+            first_name="Test",
+            last_name="User",
+            phone_number="1234567890",
+            city="Test City",
+            zip_code="12345",
+            country="Test Country",
+            is_staff=False,
+        )
+        cls.admin_user = CustomUser.objects.create_superuser(
+            is_superuser=True,
+            username="testuser",
+            password="abc123testing",
+            email="user@testsite.com",
+            first_name="Test",
+            last_name="User",
+            phone_number="1234567890",
+            city="Test City",
+            zip_code="12345",
+            country="Test Country",
+            is_staff=True,
+        )
+        cls.url_list = reverse("user-list")
+        cls.url_detail = reverse("user-detail", args=[cls.user.pk])
+        cls.url_create = reverse("user-create")
+
+    def test_list_authenticated(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_detail_authenticated(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list_unauthenticated(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_detail_unauthenticated(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_list_admin(self):
+        self.client.force_authenticate(user=self.admin_user)
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_detail_admin(self):
+        self.client.force_authenticate(user=self.admin_user)
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_user(self):
+        self.client.force_authenticate(user=self.admin_user)
+        data = {
+            "username": "testuser3",
+            "password": "abc123Testing",
+            "email": "user3@testsite.com",
+            "first_name": "Test",
+            "last_name": "User",
+            "phone_number": "1234567890",
+            "city": "Test City",
+            "zip_code": "12345",
+            "country": "Test Country",
         }
+        response = self.client.post(self.url_create, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsNotNone(
+            response.data.get("id")
+        )  # Ensure user ID is present in the response
 
-        # Ensure the user doesn't exist 
-        self.assertIsNone(CustomUser.objects.filter(username=user_data['name']).first())
+    # def test_modify_user(self):
+    #     self.client.force_authenticate(user=self.user)
+    #     data = {
+    #         "username": "testuser4",
+    #         "password": "abc123Testing",
+    #         "email": "user4@testsite.com",
+    #         "first_name": "Test",
+    #         "last_name": "User",
+    #         "phone_number": "1234567890",
+    #         "city": "Test City",
+    #         "zip_code": "12345",
+    #         "country": "Test Country1",
+    #     }
+    #     response = self.client.patch(self.url_detail, data)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Create a new user
-        response = self.client.post(reverse('signup'), data=user_data, follow=False)
-
-        # Check if the user was created
-        self.assertRedirects(response, reverse('reservation.list'), fetch_redirect_response=False)
-
-        #self.assertEqual(response.status_code, 302)
-
-        # Get the URL name from the response context
-        resolved_url_name = resolve(response.request['PATH_INFO']).url_name
-        self.assertEqual(resolved_url_name, 'reservation.list')
-
-        # Check if the user now exists
-        created_user = CustomUser.objects.get(username=user_data['name'])
-        self.assertIsNotNone(created_user)
-
-        # Check if the user can log in 
-        login_success = self.client.login(username=user_data['name'], password=user_data['password'])
-        self.assertTrue(login_success)
-
-
-
-# user permissions
-
-class UserPermissionTest(TestCase):
-    def setUp(self):
-        # Create a test user with no special permissions
-        self.user = get_user_model().objects.create_user(
-            username='testuser',
-            password='testpassword',
-            email = 'testuser@website.com',
-            
-        )
-
-        # Create a user with the required permission
-        self.user_with_permission = get_user_model().objects.create_user(
-            username='user_with_permission',
-            password='testpassword'
-        )
-        self.user_with_permission.user_permissions.add(
-            Permission.objects.get(codename='can_access_restricted_view')
-        )
-
-    def test_restricted_view_permission(self):
-        # Test access to the restricted view by a user without permission
-        response = self.client.get(reverse('authorized'))
-        self.assertEqual(response.status_code, 403)  # HTTP 403 Forbidden
-
-        # Test access to the restricted view by a user with permission
-        self.client.force_login(self.user_with_permission)
-        response = self.client.get(reverse('authorized'))
-        self.assertEqual(response.status_code, 200)  # HTTP 200 OK
+    def test_delete_user(self):
+        self.client.force_authenticate(user=self.admin_user)
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

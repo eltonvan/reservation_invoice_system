@@ -89,7 +89,7 @@ class ResCreateView(LoginRequiredMixin, CreateView):
 
     def get(self, request, *args, **kwargs):
         form = ReservationForm(user=request.user)
-        print("print on view", request.user)
+        form.initial["user"] = request.user
         return render(request, "booking/res_form.html", {"form": form})
 
     def form_valid(self, form):

@@ -7,11 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.detail import DetailView
 from django.shortcuts import redirect
 from .models import CustomUser
 from .forms import CustomUserCreationForm
-from reservation.permissions import IsOwnerOrReadOnly
+from reservation.permissions import IsOwnerOrReadOnly, CanCreateUser
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
@@ -19,19 +20,16 @@ from rest_framework.generics import (
     RetrieveAPIView,
     RetrieveUpdateAPIView,
     CreateAPIView,
-
 )
 from rest_framework import permissions as permission
 from rest_framework.permissions import IsAdminUser
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from reservation.mixins import CustomAuthorizationMixin, CustomLoginRequiredMixin
+from .mixins import CustomAuthorizationMixin, CustomLoginRequiredMixin
 
 from django.urls import reverse_lazy
 
-from .serializers import CustomUserSerializer
-
-
+from .serializers import CustomUserSerializer, CustomUserCreateLessFieldsSerializer
 
 
 class SignupView(CreateView):
@@ -69,7 +67,13 @@ class AuthorizedView(LoginRequiredMixin, TemplateView):
     login_url = "/login"
 
 
-class UpdateView(CustomAuthorizationMixin, UpdateView):
+class CustomUserDetailView(CustomLoginRequiredMixin, DetailView):
+    model = CustomUser
+    template_name = "home/user_detail.html"
+    context_object_name = "user"
+
+
+class UpdateView(CustomLoginRequiredMixin, UpdateView):
     model = CustomUser
     template_name = "home/register.html"
     success_url = "/mini/reservation"
@@ -91,6 +95,17 @@ class UpdateView(CustomAuthorizationMixin, UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
+class CustomUserDeleteView(CustomLoginRequiredMixin, DeleteView):
+    model = CustomUser
+    template_name = "home/user_delete.html"
+    success_url = "/mini/reservation"
+    success_message = "User deleted successfully."
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, self.success_message)
+        return super(CustomUserDeleteView, self).delete(request, *args, **kwargs)
+
+
 # api'S
 
 
@@ -108,8 +123,9 @@ class CustomUserApiDetail(RetrieveUpdateDestroyAPIView):
 
 class CustomUserCreateAPIView(CreateAPIView):
     queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
-    permission_classes = (IsOwnerOrReadOnly,)        
+    serializer_class = CustomUserCreateLessFieldsSerializer
+    permission_classes = (CanCreateUser,)
+
 
     def perform_create(self, serializer):
         serializer.save()

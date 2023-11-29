@@ -105,7 +105,7 @@ class CustomUserApiTest(APITestCase):
         super().setUpClass()
         cls.user = CustomUser.objects.create_user(
             is_superuser=False,
-            username="testuser1",
+            username="staff user",
             password="abc123Testing",
             email="user1@testsite.com",
             first_name="Test",
@@ -117,7 +117,7 @@ class CustomUserApiTest(APITestCase):
             is_staff=True,
         )
         cls.user2 = CustomUser.objects.create_user(
-            username="testuser2",
+            username="testuser",
             password="abc123Testing",
             email="user2@testsite.com",
             first_name="Test",
@@ -128,9 +128,10 @@ class CustomUserApiTest(APITestCase):
             country="Test Country",
             is_staff=False,
         )
+
         cls.admin_user = CustomUser.objects.create_superuser(
             is_superuser=True,
-            username="testuser",
+            username="Admin User",
             password="abc123testing",
             email="user@testsite.com",
             first_name="Test",
@@ -143,7 +144,10 @@ class CustomUserApiTest(APITestCase):
         )
         cls.url_list = reverse("user-list")
         cls.url_detail = reverse("user-detail", args=[cls.user.pk])
-        cls.url_create = reverse("user-create")
+        # cls.url_create = reverse("user-create")
+        # cls.url_update = reverse("user-update", args=[cls.user.pk])
+        # cls.url_delete = reverse("user-delete", args=[cls.user.pk])
+        # cls.url_delete2 = reverse("user-delete", args=[cls.user2.pk])
 
     def test_list_authenticated(self):
         self.client.force_authenticate(user=self.user)
@@ -174,10 +178,11 @@ class CustomUserApiTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_user(self):
-        self.client.force_authenticate(user=self.admin_user)
+        #self.client.force_authenticate(user=self.admin_user)
         data = {
             "username": "testuser3",
-            "password": "abc123Testing",
+            "password1": "abc123Testing",
+            "password2": "abc123Testing",
             "email": "user3@testsite.com",
             "first_name": "Test",
             "last_name": "User",
@@ -186,7 +191,7 @@ class CustomUserApiTest(APITestCase):
             "zip_code": "12345",
             "country": "Test Country",
         }
-        response = self.client.post(self.url_create, data)
+        response = self.client.post(reverse("user-list"), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIsNotNone(
             response.data.get("id")
@@ -209,6 +214,14 @@ class CustomUserApiTest(APITestCase):
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete_user(self):
-        self.client.force_authenticate(user=self.admin_user)
+        self.client.login(user=self.user)
         response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_delete_user(self):
+        #self.client.login(user=self.admin_user)
+        self.client.login(username = "Admin User", password = "abc123testing")
+        response = self.client.delete(self.url_detail)
+        print(self.url_detail)
+        print(CustomUser.objects.all())
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

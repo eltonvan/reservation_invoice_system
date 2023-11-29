@@ -57,6 +57,11 @@ urlpatterns = [
         views.TaxRateUpdateView.as_view(),
         name="taxrate.update",
     ),
+    path(
+        "taxrate/<int:pk>/delete",
+        views.TaxRateDeleteView.as_view(),
+        name="taxrate.delete",
+    ),
     path("taxrate/new", views.TaxRateCreateView.as_view(), name="taxrate.new"),
     path("reports", views.CityTaxReportView.as_view(), name="citytaxreport"),
     path(
@@ -95,6 +100,4 @@ urlpatterns = [
         views.TaxRateDetailAPIView.as_view(),
         name="api.taxrate.detail",
     ),
-    
-
 ]

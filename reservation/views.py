@@ -16,6 +16,7 @@ from reservation.ReservationSerializer import (
     ApartmentSerializer,
     TaxRateSerializer,
     InvoiceSerializer,
+    InvoiceWithReservationSerializer,
 )
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.generics import (
@@ -270,6 +271,13 @@ class TaxRateUpdateView(LoginRequiredMixin, UpdateView):
     login_url = LOGIN_URL
 
 
+class TaxRateDeleteView(LoginRequiredMixin, DeleteView):
+    model = TaxRate
+    success_url = TAX_RATE_URL
+    template_name = "settings/tax_delete.html"
+    login_url = LOGIN_URL
+
+
 # invoice pages
 
 
@@ -278,11 +286,9 @@ class InvoiceListView(LoginRequiredMixin, ListView):
     template_name = "invoice/inv_list.html"
     context_object_name = "invoices"
     login_url = LOGIN_URL
-    # paginate_by = 1  # Set the number of invoices per page
 
     def get_queryset(self):
         invoices = Invoice.objects.filter(reservation__user=self.request.user)
-        print(invoices)
         return invoices
 
 
@@ -443,7 +449,7 @@ class CityTaxReportView(CustomAuthorizationMixin, View):
 
 
 # api's
-class ReservationAPIView(ListAPIView):
+class ReservationAPIView(ListCreateAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = ReservationSerializer
 
@@ -457,7 +463,7 @@ class ReservationAPIView(ListAPIView):
 
 
 class ReservationDetailAPIView(RetrieveUpdateDestroyAPIView):
-    permissions_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly,)
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
 
@@ -506,5 +512,5 @@ class InvoiceAPIView(ListAPIView):
 
 class InvoiceDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Invoice.objects.all()
-    serializer_class = InvoiceSerializer
+    serializer_class = InvoiceWithReservationSerializer
     permission_classes = (IsOwnerOrReadOnly,)

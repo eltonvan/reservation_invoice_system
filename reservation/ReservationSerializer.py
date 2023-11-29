@@ -28,3 +28,10 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = "__all__"
+
+class InvoiceWithReservationSerializer(serializers.ModelSerializer):
+    reservation = ReservationSerializer()
+
+    class Meta:
+        model = Invoice
+        fields = "__all__"

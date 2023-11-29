@@ -51,7 +51,7 @@ body {
                     <a class="dropdown-item" href="{% url 'platform.list' %}">Platform</a>
                     <a class="dropdown-item" href="{% url 'apartment.list' %}">Apartment</a>
                     <a class="dropdown-item" href="{% url 'taxrate.list' %}">Tax Rates</a>
-                    <a class="dropdown-item" href="{% url 'update'  %} ">update user</a>
+                    <a class="dropdown-item" href="{% url 'update' pk=request.user.pk %}">update user</a>
 
                 </div>
             </div>

@@ -4,7 +4,6 @@ from django.forms import CharField
 from home.models import CustomUser
 
 
-
 class TaxRate(models.Model):
     user = models.ForeignKey(
         CustomUser,
@@ -99,8 +98,6 @@ class Reservation(models.Model):
     def __str__(self):
         return self.name
 
-
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
@@ -130,7 +127,7 @@ class Reservation(models.Model):
             return result
 
         except TaxRate.DoesNotExist:
-            print("No tax rate found")
+            # print("No tax rate found")
             return None
 
     def calculate_vat(self):

@@ -3,6 +3,10 @@ from .models import CustomUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    password_confirm = serializers.CharField(
+        write_only=True, required=True, style={"input_type": "password"}
+    )
+
     class Meta:
         model = CustomUser
         fields = (
@@ -27,9 +31,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = CustomUser.objects.create_user(**validated_data)
         return user
-    
+
 
 class CustomUserCreateLessFieldsSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, required=True, style={"input_type": "password"}
+    )
+    password_confirm = serializers.CharField(
+        write_only=True, required=True, style={"input_type": "password"}
+    )
+
     class Meta:
         model = CustomUser
         fields = (
@@ -37,10 +48,17 @@ class CustomUserCreateLessFieldsSerializer(serializers.ModelSerializer):
             "email",
             "username",
             "password",
-            
+            "password_confirm",
         )
         extra_kwargs = {"password": {"write_only": True}}
 
+    def validate(self, data):
+        if data["password"] != data["password_confirm"]:
+            raise serializers.ValidationError("Passwords must match.")
+        return data
+
     def create(self, validated_data):
+        print("validated_data", validated_data)
+        validated_data.pop("password_confirm")
         user = CustomUser.objects.create_user(**validated_data)
         return user
